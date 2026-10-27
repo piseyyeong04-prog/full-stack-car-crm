@@ -33,7 +33,7 @@ docker compose ps
 | :--- | :--- | :--- |
 | **Frontend** | [http://localhost:8080](http://localhost:8080) | Vue 3 Dashboard UI (via Nginx) |
 | **Backend API** | [http://localhost:3001/api](http://localhost:3001/api) | NestJS REST API |
-| **PostgreSQL** | `localhost:5432` | Relational Database (`car_crm`) |
+| **PostgreSQL** | `localhost:5434` | Relational Database (`car_crm`) |
 
 To stop all services:
 ```bash
