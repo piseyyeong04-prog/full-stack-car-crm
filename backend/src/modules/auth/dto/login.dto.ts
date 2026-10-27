@@ -30,7 +30,4 @@ export class RegisterDto {
   @IsNotEmpty()
   @MinLength(6)
   password: string;
-
-  @ApiProperty({ example: 'SALES_MANAGER', description: 'Assigned system role', required: false })
-  role?: string;
 }

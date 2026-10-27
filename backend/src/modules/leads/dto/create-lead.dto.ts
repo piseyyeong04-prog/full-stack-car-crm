@@ -1,5 +1,5 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import { IsEmail, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export enum LeadStage {
   NEW = 'NEW',
@@ -44,6 +44,7 @@ export class CreateLeadDto {
 
   @ApiPropertyOptional({ enum: LeadStage, default: LeadStage.NEW })
   @IsOptional()
+  @IsEnum(LeadStage)
   stage?: LeadStage = LeadStage.NEW;
 
   @ApiPropertyOptional({ example: 'Soun Soratha', description: 'Assigned salesperson' })
@@ -57,43 +58,4 @@ export class CreateLeadDto {
   notes?: string;
 }
 
-export class UpdateLeadDto {
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  customerName?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  phoneNumber?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsEmail()
-  email?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  interestedVehicle?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsNumber()
-  budget?: number;
-
-  @ApiPropertyOptional({ enum: LeadStage })
-  @IsOptional()
-  stage?: LeadStage;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  assignedSalesperson?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  notes?: string;
-}
+export class UpdateLeadDto extends PartialType(CreateLeadDto) {}

@@ -1,10 +1,14 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { SalesService } from './sales.service.js';
 import { CreateSaleDto } from './dto/create-sale.dto.js';
 import { PaginationDto } from '../../common/dto/pagination.dto.js';
 
+import { ApiStandardErrors } from '../../common/decorators/api-standard-errors.decorator.js';
+
 @ApiTags('Sales & Bookings')
+@ApiBearerAuth()
+@ApiStandardErrors()
 @Controller('sales')
 export class SalesController {
   constructor(private readonly salesService: SalesService) {}
@@ -17,6 +21,7 @@ export class SalesController {
   }
 
   @Get(':id')
+  @ApiParam({ name: 'id', description: 'Resource identifier', example: 'lead_1' })
   @ApiOperation({ summary: 'Get details of a booking or sales record' })
   async findOne(@Param('id') id: string) {
     return this.salesService.findOne(id);

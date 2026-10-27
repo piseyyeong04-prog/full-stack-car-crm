@@ -1,5 +1,5 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export enum VehicleStatus {
   IN_STOCK = 'IN_STOCK',
@@ -45,6 +45,7 @@ export class CreateVehicleDto {
 
   @ApiPropertyOptional({ enum: VehicleStatus, default: VehicleStatus.IN_STOCK })
   @IsOptional()
+  @IsEnum(VehicleStatus)
   status?: VehicleStatus = VehicleStatus.IN_STOCK;
 
   @ApiPropertyOptional({ example: 'Showroom Floor A1', description: 'Location / showroom parking bay' })
@@ -53,43 +54,4 @@ export class CreateVehicleDto {
   location?: string;
 }
 
-export class UpdateVehicleDto {
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  make?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  model?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsNumber()
-  year?: number;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  color?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsNumber()
-  price?: number;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsNumber()
-  cost?: number;
-
-  @ApiPropertyOptional({ enum: VehicleStatus })
-  @IsOptional()
-  status?: VehicleStatus;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  location?: string;
-}
+export class UpdateVehicleDto extends PartialType(CreateVehicleDto) {}

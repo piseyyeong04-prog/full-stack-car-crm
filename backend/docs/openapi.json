@@ -1,0 +1,2037 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/health": {
+      "get": {
+        "operationId": "AppController_getHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Service health check",
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authentication successful with JWT token"
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        },
+        "summary": "User login",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User successfully created"
+          }
+        },
+        "summary": "Register a new staff member",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api/auth/profile": {
+      "get": {
+        "operationId": "AuthController_getProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get current user profile",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api/leads": {
+      "get": {
+        "operationId": "LeadsController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Search term",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "description": "Field name to sort by",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "required": false,
+            "in": "query",
+            "description": "Sort direction",
+            "schema": {
+              "default": "DESC",
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of leads"
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient role permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List CRM leads with pagination and search",
+        "tags": [
+          "Leads"
+        ]
+      },
+      "post": {
+        "operationId": "LeadsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLeadDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Lead successfully created"
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient role permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new CRM lead",
+        "tags": [
+          "Leads"
+        ]
+      }
+    },
+    "/api/leads/{id}": {
+      "get": {
+        "operationId": "LeadsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Resource identifier",
+            "schema": {
+              "example": "lead_1",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient role permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get details of a specific lead",
+        "tags": [
+          "Leads"
+        ]
+      },
+      "patch": {
+        "operationId": "LeadsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Resource identifier",
+            "schema": {
+              "example": "lead_1",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateLeadDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient role permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update lead information or pipeline stage",
+        "tags": [
+          "Leads"
+        ]
+      },
+      "delete": {
+        "operationId": "LeadsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Resource identifier",
+            "schema": {
+              "example": "lead_1",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient role permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a lead",
+        "tags": [
+          "Leads"
+        ]
+      }
+    },
+    "/api/vehicles": {
+      "get": {
+        "operationId": "VehiclesController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Search term",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "description": "Field name to sort by",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "required": false,
+            "in": "query",
+            "description": "Sort direction",
+            "schema": {
+              "default": "DESC",
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of vehicles"
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient role permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List vehicle stock and inventory",
+        "tags": [
+          "Vehicles"
+        ]
+      },
+      "post": {
+        "operationId": "VehiclesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVehicleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Vehicle created"
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient role permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Add a new vehicle to stock",
+        "tags": [
+          "Vehicles"
+        ]
+      }
+    },
+    "/api/vehicles/{id}": {
+      "get": {
+        "operationId": "VehiclesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Resource identifier",
+            "schema": {
+              "example": "lead_1",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient role permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get vehicle details by ID or VIN",
+        "tags": [
+          "Vehicles"
+        ]
+      },
+      "patch": {
+        "operationId": "VehiclesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Resource identifier",
+            "schema": {
+              "example": "lead_1",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateVehicleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient role permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update vehicle information or inventory status",
+        "tags": [
+          "Vehicles"
+        ]
+      },
+      "delete": {
+        "operationId": "VehiclesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Resource identifier",
+            "schema": {
+              "example": "lead_1",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient role permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remove a vehicle from inventory",
+        "tags": [
+          "Vehicles"
+        ]
+      }
+    },
+    "/api/customers": {
+      "get": {
+        "operationId": "CustomersController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Search term",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "description": "Field name to sort by",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "required": false,
+            "in": "query",
+            "description": "Sort direction",
+            "schema": {
+              "default": "DESC",
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated customer list"
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient role permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List customer profiles",
+        "tags": [
+          "Customers"
+        ]
+      },
+      "post": {
+        "operationId": "CustomersController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCustomerDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Customer created"
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient role permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new customer profile",
+        "tags": [
+          "Customers"
+        ]
+      }
+    },
+    "/api/customers/{id}": {
+      "get": {
+        "operationId": "CustomersController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Resource identifier",
+            "schema": {
+              "example": "lead_1",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient role permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get customer profile details",
+        "tags": [
+          "Customers"
+        ]
+      },
+      "patch": {
+        "operationId": "CustomersController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Resource identifier",
+            "schema": {
+              "example": "lead_1",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCustomerDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient role permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update customer profile",
+        "tags": [
+          "Customers"
+        ]
+      },
+      "delete": {
+        "operationId": "CustomersController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Resource identifier",
+            "schema": {
+              "example": "lead_1",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient role permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a customer",
+        "tags": [
+          "Customers"
+        ]
+      }
+    },
+    "/api/sales": {
+      "get": {
+        "operationId": "SalesController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Search term",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "description": "Field name to sort by",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "required": false,
+            "in": "query",
+            "description": "Sort direction",
+            "schema": {
+              "default": "DESC",
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated sales list"
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient role permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List sales quotations, bookings, and contracts",
+        "tags": [
+          "Sales & Bookings"
+        ]
+      },
+      "post": {
+        "operationId": "SalesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSaleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Sale record created"
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient role permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new booking, quotation, or sale",
+        "tags": [
+          "Sales & Bookings"
+        ]
+      }
+    },
+    "/api/sales/{id}": {
+      "get": {
+        "operationId": "SalesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Resource identifier",
+            "schema": {
+              "example": "lead_1",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient role permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get details of a booking or sales record",
+        "tags": [
+          "Sales & Bookings"
+        ]
+      }
+    },
+    "/api/reports/dashboard": {
+      "get": {
+        "operationId": "ReportsController_getDashboardSummary",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Dashboard metrics and KPIs"
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient role permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get CRM dashboard KPIs and activity summary",
+        "tags": [
+          "Reports & Analytics"
+        ]
+      }
+    },
+    "/api/reports/sales": {
+      "get": {
+        "operationId": "ReportsController_getSalesReport",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient role permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get monthly sales and salesperson performance report",
+        "tags": [
+          "Reports & Analytics"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Car CRM API",
+    "description": "\n## Overview\nREST API for the **Car Dealership CRM** — leads, vehicles, customers, sales/bookings and reporting.\n\n- **Base URL (local):** `http://localhost:3001/api`\n- **Content type:** `application/json`\n- **Interactive docs:** `/docs` · **Raw spec:** `/docs-json`\n\n## Authentication\nMost endpoints require a JWT **Bearer** token.\n\n1. `POST /auth/login` with your credentials.\n2. Copy `data.token` from the response.\n3. Click **Authorize** (top right) and paste the token, **or** send the header:\n   `Authorization: Bearer <token>`\n\nDefault demo accounts:\n| Email | Password | Role |\n|---|---|---|\n| admin@carcrm.com | Password123! | ADMIN |\n| soratha@carcrm.com | Password123! | SALES_MANAGER |\n\n## Response envelope\nEvery successful response is wrapped:\n```json\n{\n  \"success\": true,\n  \"statusCode\": 200,\n  \"message\": \"Operation successful\",\n  \"data\": { },\n  \"timestamp\": \"2026-10-27T14:00:00.000Z\"\n}\n```\n\n## Pagination\nList endpoints accept query params: `page` (default 1), `limit` (default 10, max 100),\n`search`, `sortBy`, `sortOrder` (`ASC`/`DESC`). The `data` object is:\n```json\n{ \"items\": [], \"total\": 0, \"page\": 1, \"limit\": 10, \"totalPages\": 0, \"hasNextPage\": false, \"hasPrevPage\": false }\n```\n\n## Errors\nFailures return a consistent shape:\n```json\n{ \"success\": false, \"statusCode\": 400, \"message\": \"Validation failed\", \"error\": \"Bad Request\", \"path\": \"/api/leads\", \"timestamp\": \"...\" }\n```\nCommon codes: **400** validation · **401** missing/invalid token · **403** insufficient role · **404** not found.\n\n## Roles\n`ADMIN`, `SALES_MANAGER`, `TEAM_LEADER`, `SALES_EXECUTIVE`.\nReports and destructive operations (delete) require **ADMIN** or **SALES_MANAGER**.\n",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Car CRM Engineering",
+      "url": "https://carcrm.local",
+      "email": "dev@carcrm.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "tags": [
+    {
+      "name": "Health",
+      "description": "Service liveness and status"
+    },
+    {
+      "name": "Authentication",
+      "description": "Login, register and current profile"
+    },
+    {
+      "name": "Leads",
+      "description": "CRM leads, pipeline stages and assignment"
+    },
+    {
+      "name": "Vehicles",
+      "description": "Vehicle inventory, stock and VIN lookup"
+    },
+    {
+      "name": "Customers",
+      "description": "Customer profiles and contact details"
+    },
+    {
+      "name": "Sales & Bookings",
+      "description": "Quotations, bookings and sales contracts"
+    },
+    {
+      "name": "Reports & Analytics",
+      "description": "KPIs, sales performance and dashboards"
+    }
+  ],
+  "servers": [
+    {
+      "url": "http://localhost:3001",
+      "description": "Local"
+    },
+    {
+      "url": "https://api.carcrm.example",
+      "description": "Production"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "description": "Paste the JWT from POST /auth/login"
+      }
+    },
+    "schemas": {
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "admin@carcrm.com",
+            "description": "User email address"
+          },
+          "password": {
+            "type": "string",
+            "example": "Password123!",
+            "description": "User password",
+            "minLength": 6
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Soun Soratha",
+            "description": "Full name"
+          },
+          "email": {
+            "type": "string",
+            "example": "soratha@carcrm.com",
+            "description": "User email address"
+          },
+          "password": {
+            "type": "string",
+            "example": "Password123!",
+            "description": "User password",
+            "minLength": 6
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "password"
+        ]
+      },
+      "ErrorResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "statusCode": {
+            "type": "number",
+            "example": 400
+          },
+          "message": {
+            "type": "object",
+            "example": "Validation failed",
+            "description": "Human readable error message"
+          },
+          "error": {
+            "type": "string",
+            "example": "Bad Request"
+          },
+          "path": {
+            "type": "string",
+            "example": "/api/leads"
+          },
+          "timestamp": {
+            "type": "string",
+            "example": "2026-10-27T14:00:00.000Z"
+          }
+        },
+        "required": [
+          "success",
+          "statusCode",
+          "message",
+          "path",
+          "timestamp"
+        ]
+      },
+      "CreateLeadDto": {
+        "type": "object",
+        "properties": {
+          "customerName": {
+            "type": "string",
+            "example": "Chan Vathanaka",
+            "description": "Prospective customer name"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "+855 12 345 678",
+            "description": "Contact phone number"
+          },
+          "email": {
+            "type": "string",
+            "example": "vathanaka@example.com"
+          },
+          "interestedVehicle": {
+            "type": "string",
+            "example": "Toyota Land Cruiser 300",
+            "description": "Interested vehicle or model"
+          },
+          "budget": {
+            "type": "number",
+            "example": 125000,
+            "description": "Customer estimated budget"
+          },
+          "source": {
+            "type": "string",
+            "example": "Facebook Ad",
+            "description": "Lead generation source"
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "CONTACTED",
+              "TEST_DRIVE",
+              "QUOTATION_SENT",
+              "NEGOTIATION",
+              "WON",
+              "LOST"
+            ],
+            "default": "NEW"
+          },
+          "assignedSalesperson": {
+            "type": "string",
+            "example": "Soun Soratha",
+            "description": "Assigned salesperson"
+          },
+          "notes": {
+            "type": "string",
+            "example": "Prefers pearl white color with black interior"
+          }
+        },
+        "required": [
+          "customerName",
+          "phoneNumber",
+          "interestedVehicle",
+          "source"
+        ]
+      },
+      "UpdateLeadDto": {
+        "type": "object",
+        "properties": {
+          "customerName": {
+            "type": "string",
+            "example": "Chan Vathanaka",
+            "description": "Prospective customer name"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "+855 12 345 678",
+            "description": "Contact phone number"
+          },
+          "email": {
+            "type": "string",
+            "example": "vathanaka@example.com"
+          },
+          "interestedVehicle": {
+            "type": "string",
+            "example": "Toyota Land Cruiser 300",
+            "description": "Interested vehicle or model"
+          },
+          "budget": {
+            "type": "number",
+            "example": 125000,
+            "description": "Customer estimated budget"
+          },
+          "source": {
+            "type": "string",
+            "example": "Facebook Ad",
+            "description": "Lead generation source"
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "CONTACTED",
+              "TEST_DRIVE",
+              "QUOTATION_SENT",
+              "NEGOTIATION",
+              "WON",
+              "LOST"
+            ],
+            "default": "NEW"
+          },
+          "assignedSalesperson": {
+            "type": "string",
+            "example": "Soun Soratha",
+            "description": "Assigned salesperson"
+          },
+          "notes": {
+            "type": "string",
+            "example": "Prefers pearl white color with black interior"
+          }
+        }
+      },
+      "CreateVehicleDto": {
+        "type": "object",
+        "properties": {
+          "make": {
+            "type": "string",
+            "example": "Toyota",
+            "description": "Brand or manufacturer"
+          },
+          "model": {
+            "type": "string",
+            "example": "Land Cruiser 300 VXR",
+            "description": "Model name"
+          },
+          "year": {
+            "type": "number",
+            "example": 2024,
+            "description": "Manufacturing year"
+          },
+          "vin": {
+            "type": "string",
+            "example": "JTMCY7AJ8P4019283",
+            "description": "Vehicle Identification Number (VIN)"
+          },
+          "color": {
+            "type": "string",
+            "example": "Pearl White",
+            "description": "Exterior color"
+          },
+          "price": {
+            "type": "number",
+            "example": 125000,
+            "description": "Selling price in USD"
+          },
+          "cost": {
+            "type": "number",
+            "example": 108000,
+            "description": "Acquisition / purchase cost"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "IN_STOCK",
+              "RESERVED",
+              "SOLD",
+              "IN_TRANSIT",
+              "MAINTENANCE"
+            ],
+            "default": "IN_STOCK"
+          },
+          "location": {
+            "type": "string",
+            "example": "Showroom Floor A1",
+            "description": "Location / showroom parking bay"
+          }
+        },
+        "required": [
+          "make",
+          "model",
+          "year",
+          "vin",
+          "color",
+          "price"
+        ]
+      },
+      "UpdateVehicleDto": {
+        "type": "object",
+        "properties": {
+          "make": {
+            "type": "string",
+            "example": "Toyota",
+            "description": "Brand or manufacturer"
+          },
+          "model": {
+            "type": "string",
+            "example": "Land Cruiser 300 VXR",
+            "description": "Model name"
+          },
+          "year": {
+            "type": "number",
+            "example": 2024,
+            "description": "Manufacturing year"
+          },
+          "vin": {
+            "type": "string",
+            "example": "JTMCY7AJ8P4019283",
+            "description": "Vehicle Identification Number (VIN)"
+          },
+          "color": {
+            "type": "string",
+            "example": "Pearl White",
+            "description": "Exterior color"
+          },
+          "price": {
+            "type": "number",
+            "example": 125000,
+            "description": "Selling price in USD"
+          },
+          "cost": {
+            "type": "number",
+            "example": 108000,
+            "description": "Acquisition / purchase cost"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "IN_STOCK",
+              "RESERVED",
+              "SOLD",
+              "IN_TRANSIT",
+              "MAINTENANCE"
+            ],
+            "default": "IN_STOCK"
+          },
+          "location": {
+            "type": "string",
+            "example": "Showroom Floor A1",
+            "description": "Location / showroom parking bay"
+          }
+        }
+      },
+      "CreateCustomerDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Oknha Bun Narith",
+            "description": "Customer full name"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+855 12 998 877",
+            "description": "Phone number"
+          },
+          "email": {
+            "type": "string",
+            "example": "bun.narith@company.com.kh"
+          },
+          "address": {
+            "type": "string",
+            "example": "#123 Norodom Blvd, Phnom Penh"
+          },
+          "customerType": {
+            "type": "string",
+            "example": "VIP Corporate Client"
+          }
+        },
+        "required": [
+          "name",
+          "phone"
+        ]
+      },
+      "UpdateCustomerDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Oknha Bun Narith",
+            "description": "Customer full name"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+855 12 998 877",
+            "description": "Phone number"
+          },
+          "email": {
+            "type": "string",
+            "example": "bun.narith@company.com.kh"
+          },
+          "address": {
+            "type": "string",
+            "example": "#123 Norodom Blvd, Phnom Penh"
+          },
+          "customerType": {
+            "type": "string",
+            "example": "VIP Corporate Client"
+          }
+        }
+      },
+      "CreateSaleDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "BOOKING",
+              "QUOTATION",
+              "CONTRACT"
+            ],
+            "example": "BOOKING"
+          },
+          "customerId": {
+            "type": "string",
+            "example": "cust_1",
+            "description": "Customer ID"
+          },
+          "vehicleId": {
+            "type": "string",
+            "example": "veh_1",
+            "description": "Vehicle ID"
+          },
+          "agreedPrice": {
+            "type": "number",
+            "example": 135000,
+            "description": "Agreed sale price"
+          },
+          "depositAmount": {
+            "type": "number",
+            "example": 5000,
+            "description": "Deposit / booking fee"
+          },
+          "salesperson": {
+            "type": "string",
+            "example": "Soun Soratha",
+            "description": "Responsible salesperson"
+          },
+          "notes": {
+            "type": "string",
+            "example": "Delivery scheduled for next Monday with full tank and ceramic coating"
+          }
+        },
+        "required": [
+          "type",
+          "customerId",
+          "vehicleId",
+          "agreedPrice"
+        ]
+      },
+      "ApiResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "statusCode": {
+            "type": "number",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "example": "Operation completed successfully"
+          },
+          "timestamp": {
+            "type": "string",
+            "example": "2026-10-27T14:00:00.000Z"
+          }
+        },
+        "required": [
+          "success",
+          "statusCode",
+          "message",
+          "timestamp"
+        ]
+      },
+      "PaginationDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "default": 1,
+            "minimum": 1,
+            "description": "Page number"
+          },
+          "limit": {
+            "type": "number",
+            "default": 10,
+            "minimum": 1,
+            "maximum": 100,
+            "description": "Number of items per page"
+          },
+          "search": {
+            "type": "string",
+            "description": "Search term"
+          },
+          "sortBy": {
+            "type": "string",
+            "description": "Field name to sort by"
+          },
+          "sortOrder": {
+            "type": "string",
+            "enum": [
+              "ASC",
+              "DESC"
+            ],
+            "default": "DESC",
+            "description": "Sort direction"
+          }
+        }
+      },
+      "PaginatedResultDto": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  }
+}

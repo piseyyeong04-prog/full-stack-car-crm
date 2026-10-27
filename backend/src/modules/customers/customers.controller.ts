@@ -8,12 +8,18 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { CustomersService } from './customers.service.js';
 import { CreateCustomerDto, UpdateCustomerDto } from './dto/create-customer.dto.js';
 import { PaginationDto } from '../../common/dto/pagination.dto.js';
+import { Roles } from '../../common/decorators/roles.decorator.js';
+import { Role } from '../../common/enums/role.enum.js';
+
+import { ApiStandardErrors } from '../../common/decorators/api-standard-errors.decorator.js';
 
 @ApiTags('Customers')
+@ApiBearerAuth()
+@ApiStandardErrors()
 @Controller('customers')
 export class CustomersController {
   constructor(private readonly customersService: CustomersService) {}
@@ -26,6 +32,7 @@ export class CustomersController {
   }
 
   @Get(':id')
+  @ApiParam({ name: 'id', description: 'Resource identifier', example: 'lead_1' })
   @ApiOperation({ summary: 'Get customer profile details' })
   async findOne(@Param('id') id: string) {
     return this.customersService.findOne(id);
@@ -39,6 +46,7 @@ export class CustomersController {
   }
 
   @Patch(':id')
+  @ApiParam({ name: 'id', description: 'Resource identifier', example: 'lead_1' })
   @ApiOperation({ summary: 'Update customer profile' })
   async update(
     @Param('id') id: string,
@@ -47,7 +55,9 @@ export class CustomersController {
     return this.customersService.update(id, updateCustomerDto);
   }
 
+  @Roles(Role.ADMIN, Role.SALES_MANAGER)
   @Delete(':id')
+  @ApiParam({ name: 'id', description: 'Resource identifier', example: 'lead_1' })
   @ApiOperation({ summary: 'Delete a customer' })
   async remove(@Param('id') id: string) {
     return this.customersService.remove(id);

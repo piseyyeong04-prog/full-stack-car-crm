@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export enum SaleType {
   BOOKING = 'BOOKING',
@@ -17,6 +17,7 @@ export enum SaleStatus {
 
 export class CreateSaleDto {
   @ApiProperty({ enum: SaleType, example: SaleType.BOOKING })
+  @IsEnum(SaleType)
   @IsNotEmpty()
   type: SaleType;
 

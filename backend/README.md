@@ -1,114 +1,130 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Car CRM API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+NestJS REST API for the Car Dealership CRM — leads, vehicles, customers, sales/bookings and reporting.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## API documentation
 
-## Description
+| Resource | Where |
+| --- | --- |
+| Interactive Swagger UI | `http://localhost:3001/docs` |
+| Raw OpenAPI spec (live) | `http://localhost:3001/docs-json` |
+| Raw OpenAPI spec (file) | `docs/openapi.json` |
+| Regenerate the spec file | `npm run swagger:generate` |
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+**Postman / Insomnia:** import `docs/openapi.json` (or the live `/docs-json` URL) to get every endpoint, request body and schema pre-filled.
 
-## Project setup
+## Getting started
 
 ```bash
-$ npm install
+npm install
+cp .env.example .env
+npm run start:dev
 ```
 
-## Compile and run the project
+Server: `http://localhost:3001/api` · Swagger: `http://localhost:3001/docs`
+
+## Environment variables
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `PORT` | `3001` | HTTP port |
+| `API_PREFIX` | `api` | Global route prefix |
+| `CORS_ORIGIN` | `*` | Comma-separated allowlist, or `*` |
+| `JWT_SECRET` | dev value | **Set a strong secret in production** |
+| `JWT_EXPIRES_IN` | `7d` | Token lifetime |
+| `DATABASE_URL` | local Postgres | Reserved for the persistence layer |
+
+## Authentication
+
+Most endpoints require a JWT. Get one from `POST /api/auth/login`, then send
+`Authorization: Bearer <token>` (or use **Authorize** in Swagger).
+
+Demo accounts:
+
+| Email | Password | Role |
+| --- | --- | --- |
+| `admin@carcrm.com` | `Password123!` | `ADMIN` |
+| `soratha@carcrm.com` | `Password123!` | `SALES_MANAGER` |
+
+Roles: `ADMIN`, `SALES_MANAGER`, `TEAM_LEADER`, `SALES_EXECUTIVE`.
+Reports and destructive operations require `ADMIN` or `SALES_MANAGER`.
+
+## Endpoints
+
+| Method | Path | Description |
+| --- | --- | --- |
+| GET | `/api/health` | Health check (public) |
+| POST | `/api/auth/login` | Login → JWT (public) |
+| POST | `/api/auth/register` | Register staff (public, always `SALES_EXECUTIVE`) |
+| GET | `/api/auth/profile` | Current user profile |
+| GET/POST | `/api/leads` | List / create leads |
+| GET/PATCH/DELETE | `/api/leads/{id}` | Read / update / delete lead |
+| GET/POST | `/api/vehicles` | List / create vehicles |
+| GET/PATCH/DELETE | `/api/vehicles/{id}` | Read / update / delete vehicle |
+| GET/POST | `/api/customers` | List / create customers |
+| GET/PATCH/DELETE | `/api/customers/{id}` | Read / update / delete customer |
+| GET/POST | `/api/sales` | List / create sales & bookings |
+| GET | `/api/sales/{id}` | Read a sale/booking |
+| GET | `/api/reports/dashboard` | Dashboard KPIs (manager+) |
+| GET | `/api/reports/sales` | Sales report (manager+) |
+
+## Response format
+
+Successful responses are wrapped:
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Operation successful",
+  "data": {},
+  "timestamp": "2026-10-27T14:00:00.000Z"
+}
+```
+
+List endpoints paginate with `page`, `limit`, `search`, `sortBy`, `sortOrder`:
+
+```json
+{
+  "data": {
+    "items": [],
+    "total": 0,
+    "page": 1,
+    "limit": 10,
+    "totalPages": 0,
+    "hasNextPage": false,
+    "hasPrevPage": false
+  }
+}
+```
+
+Errors:
+
+```json
+{
+  "success": false,
+  "statusCode": 400,
+  "message": "Validation failed",
+  "error": "Bad Request",
+  "path": "/api/leads",
+  "timestamp": "2026-10-27T14:00:00.000Z"
+}
+```
+
+Status codes: `400` validation · `401` missing/invalid token · `403` insufficient role · `404` not found · `409` conflict.
+
+## Scripts
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm run start:dev        # watch mode
+npm run build            # compile to dist/
+npm run start:prod       # run the compiled app
+npm run lint             # oxlint
+npm test                 # unit tests
+npm run swagger:generate # build + write docs/openapi.json
 ```
 
-## Run tests
+## Notes
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Observability
-
-In production applications, observability is essential for understanding how your system behaves, detecting issues early, and maintaining reliable performance.
-
-[NestJS Observe](https://observe.nestjs.com) automatically instruments your NestJS application, giving you deep visibility into your system with minimal setup:
-
-- **Distributed tracing:** Follow requests across services and understand how they flow through your system.
-- **Waterfall analysis:** Visualize request execution and identify slow operations, bottlenecks, and unexpected delays.
-- **Performance analysis:** Analyze application performance in real time and quickly pinpoint areas that need optimization.
-- **Metrics:** Track key application and infrastructure metrics to understand system health and performance trends.
-- **Logging:** Centralize and correlate logs with traces and other telemetry to make debugging easier.
-- **Error tracking:** Detect errors quickly and investigate their root causes with the surrounding context.
-- **SLA monitoring:** Track service-level objectives and identify when your application is approaching or exceeding defined thresholds.
-- **Alarms and alerts:** Set up alerts for critical errors, performance degradation, SLA violations, and other anomalies so your team can react quickly.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Auto-instrument your application with [NestJS Observer](https://observer.nestjs.com). Distributed tracing, metrics, and logging made easy. Error tracking and performance monitoring for your NestJS applications.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- Data is currently served from in-memory stores; the persistence layer (Prisma/Postgres) is the next step.
+- Every write endpoint validates input with `class-validator` (enums enforced, unknown fields stripped).

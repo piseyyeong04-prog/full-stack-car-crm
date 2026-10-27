@@ -1,23 +1,39 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import bcrypt from 'bcryptjs';
 import { LoginDto, RegisterDto } from './dto/login.dto.js';
+import { Role } from '../../common/enums/role.enum.js';
+
+interface UserRecord {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  role: Role;
+}
 
 @Injectable()
 export class AuthService {
-  // In-memory mock for initial structure before ORM integration
-  private readonly users = [
+  constructor(private readonly jwtService: JwtService) {}
+
+  private readonly users: UserRecord[] = [
     {
       id: 'usr_admin',
       name: 'System Admin',
       email: 'admin@carcrm.com',
-      password: 'Password123!',
-      role: 'ADMIN',
+      password: bcrypt.hashSync('Password123!', 10),
+      role: Role.ADMIN,
     },
     {
       id: 'usr_soratha',
       name: 'Soun Soratha',
       email: 'soratha@carcrm.com',
-      password: 'Password123!',
-      role: 'SALES_MANAGER',
+      password: bcrypt.hashSync('Password123!', 10),
+      role: Role.SALES_MANAGER,
     },
   ];
 
@@ -26,12 +42,17 @@ export class AuthService {
       (u) => u.email.toLowerCase() === loginDto.email.toLowerCase(),
     );
 
-    if (!user || user.password !== loginDto.password) {
+    if (!user || !bcrypt.compareSync(loginDto.password, user.password)) {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    // In full implementation, sign JWT with JwtService
-    const token = `fake-jwt-token-for-${user.id}`;
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    };
+    const token = await this.jwtService.signAsync(payload);
 
     return {
       token,
@@ -50,15 +71,15 @@ export class AuthService {
     );
 
     if (exists) {
-      throw new UnauthorizedException('User with this email already exists');
+      throw new ConflictException('User with this email already exists');
     }
 
-    const newUser = {
+    const newUser: UserRecord = {
       id: `usr_${Date.now()}`,
       name: registerDto.name,
       email: registerDto.email,
-      password: registerDto.password,
-      role: registerDto.role || 'SALES_EXECUTIVE',
+      password: bcrypt.hashSync(registerDto.password, 10),
+      role: Role.SALES_EXECUTIVE,
     };
 
     this.users.push(newUser);
@@ -72,7 +93,11 @@ export class AuthService {
   }
 
   async getProfile(userId: string) {
-    const user = this.users.find((u) => u.id === userId) || this.users[0];
+    const user = this.users.find((u) => u.id === userId);
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
     return {
       id: user.id,
       name: user.name,

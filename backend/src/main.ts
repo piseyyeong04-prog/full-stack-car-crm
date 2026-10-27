@@ -1,11 +1,15 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module.js';
+import { buildSwaggerConfig } from './config/swagger.config.js';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter.js';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor.js';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor.js';
+import { ApiResponseDto } from './common/dto/api-response.dto.js';
+import { ErrorResponseDto } from './common/dto/error-response.dto.js';
+import { PaginationDto, PaginatedResultDto } from './common/dto/pagination.dto.js';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
@@ -17,10 +21,14 @@ async function bootstrap() {
   app.setGlobalPrefix(apiPrefix);
 
   // Enable Cross-Origin Resource Sharing
+  const corsOrigin = configService.get<string>('cors.origin', '*');
   app.enableCors({
-    origin: '*',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    origin:
+      corsOrigin === '*'
+        ? true
+        : corsOrigin.split(',').map((o) => o.trim()).filter(Boolean),
     credentials: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   });
 
   // Global Validation Pipe
@@ -40,18 +48,18 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
 
   // Swagger OpenAPI Documentation
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle('Car CRM REST API')
-    .setDescription(
-      'Enterprise API for managing dealership leads, vehicle stock, customers, bookings, and reporting',
-    )
-    .setVersion('1.0.0')
-    .addBearerAuth()
-    .build();
-
-  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  const document = SwaggerModule.createDocument(app, buildSwaggerConfig(), {
+    extraModels: [ApiResponseDto, ErrorResponseDto, PaginationDto, PaginatedResultDto],
+  });
   SwaggerModule.setup('docs', app, document, {
     customSiteTitle: 'Car CRM API Docs',
+    swaggerOptions: {
+      persistAuthorization: true,
+      displayRequestDuration: true,
+      filter: true,
+      tagsSorter: 'alpha',
+      operationsSorter: 'alpha',
+    },
   });
 
   const port = configService.get<number>('port', 3001);

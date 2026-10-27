@@ -1,8 +1,9 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service.js';
 import { LoginDto, RegisterDto } from './dto/login.dto.js';
 import { Public } from '../../common/decorators/public.decorator.js';
+import { CurrentUser } from '../../common/decorators/current-user.decorator.js';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -28,8 +29,9 @@ export class AuthController {
   }
 
   @Get('profile')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get current user profile' })
-  async getProfile() {
-    return this.authService.getProfile('usr_admin');
+  async getProfile(@CurrentUser('sub') userId: string) {
+    return this.authService.getProfile(userId);
   }
 }

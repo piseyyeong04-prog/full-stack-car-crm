@@ -8,12 +8,18 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { LeadsService } from './leads.service.js';
 import { CreateLeadDto, UpdateLeadDto } from './dto/create-lead.dto.js';
 import { PaginationDto } from '../../common/dto/pagination.dto.js';
+import { Roles } from '../../common/decorators/roles.decorator.js';
+import { Role } from '../../common/enums/role.enum.js';
+
+import { ApiStandardErrors } from '../../common/decorators/api-standard-errors.decorator.js';
 
 @ApiTags('Leads')
+@ApiBearerAuth()
+@ApiStandardErrors()
 @Controller('leads')
 export class LeadsController {
   constructor(private readonly leadsService: LeadsService) {}
@@ -26,6 +32,7 @@ export class LeadsController {
   }
 
   @Get(':id')
+  @ApiParam({ name: 'id', description: 'Resource identifier', example: 'lead_1' })
   @ApiOperation({ summary: 'Get details of a specific lead' })
   async findOne(@Param('id') id: string) {
     return this.leadsService.findOne(id);
@@ -39,6 +46,7 @@ export class LeadsController {
   }
 
   @Patch(':id')
+  @ApiParam({ name: 'id', description: 'Resource identifier', example: 'lead_1' })
   @ApiOperation({ summary: 'Update lead information or pipeline stage' })
   async update(
     @Param('id') id: string,
@@ -47,7 +55,9 @@ export class LeadsController {
     return this.leadsService.update(id, updateLeadDto);
   }
 
+  @Roles(Role.ADMIN, Role.SALES_MANAGER)
   @Delete(':id')
+  @ApiParam({ name: 'id', description: 'Resource identifier', example: 'lead_1' })
   @ApiOperation({ summary: 'Delete a lead' })
   async remove(@Param('id') id: string) {
     return this.leadsService.remove(id);
