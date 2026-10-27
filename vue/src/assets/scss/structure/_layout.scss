@@ -1,0 +1,51 @@
+//
+// layout.scss
+//
+
+@use "../variables" as *;
+@use "../utils/mixins" as *;
+
+.main-wrapper {
+    min-height: 100vh;
+    background-color: #f4f6f8;
+}
+
+.page-wrapper {
+    margin: 12px 12px 12px var(--sidenav-width, 240px);
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    position: relative;
+    left: 0;
+    min-height: calc(100vh - 24px);
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1), margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    @include respond-below(lg) {
+        margin: 0 !important;
+        min-height: 100vh;
+    }
+    .content {
+        padding:  1.5rem;
+        background: linear-gradient(180deg, #FFFFFF 0%, #F5FEFF 100%);
+        border-radius: $border-radius-lg;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        @include respond-below(lg) {
+            border-radius: 0;
+        }
+
+        .content-wrap {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+    }
+}
+
+body.sidebar-collapsed .page-wrapper,
+body.mini-sidebar .page-wrapper {
+    margin-left: 72px;
+    @include respond-below(lg) {
+        margin-left: 0 !important;
+    }
+}
