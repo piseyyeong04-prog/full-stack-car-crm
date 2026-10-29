@@ -6,28 +6,28 @@
             <div class="content-wrap">
                 <div class="d-flex align-items-center flex-wrap gap-3 border-bottom pb-4 mb-4">
                     <div class="flex-grow-1">
-                        <h4 class="mb-1">Bookings &amp; Deposits</h4>
-                        <p class="text-muted mb-0">Reserve a specific VIN, track deposits, expiry and refund terms.</p>
+                        <h4 class="mb-1">{{ $t('bookings.title') }}</h4>
+                        <p class="text-muted mb-0">{{ $t('bookings.subtitle') }}</p>
                     </div>
                     <a href="#" class="btn btn-primary d-inline-flex align-items-center" data-bs-toggle="offcanvas"
-                        data-bs-target="#add_booking"><i class="icon-plus me-1"></i>New Booking</a>
+                        data-bs-target="#add_booking"><i class="icon-plus me-1"></i>{{ $t('bookings.newBooking') }}</a>
                 </div>
 
                 <div class="d-flex align-items-center flex-wrap gap-3 justify-content-between mb-4">
                     <div class="dropdown">
                         <a href="javascript:void(0);" class="dropdown-toggle btn btn-white d-inline-flex align-items-center"
                             data-bs-toggle="dropdown">
-                            <i class="icon-circle-dot text-dark me-2"></i>{{ statusFilter === 'All' ? 'All Status' : statusFilter }}
+                            <i class="icon-circle-dot text-dark me-2"></i>{{ statusFilter === 'All' ? $t('bookings.allStatus') : statusLabel(statusFilter) }}
                         </a>
                         <ul class="dropdown-menu p-3">
                             <li v-for="s in statusOptions" :key="s">
-                                <a href="javascript:void(0);" class="dropdown-item rounded" @click="statusFilter = s">{{ s }}</a>
+                                <a href="javascript:void(0);" class="dropdown-item rounded" @click="statusFilter = s">{{ s === 'All' ? $t('bookings.all') : statusLabel(s) }}</a>
                             </li>
                         </ul>
                     </div>
                     <div class="search-input">
                         <span class="btn-searchset"><i class="icon-search fs-14"></i></span>
-                        <input type="text" class="form-control search-addon" placeholder="Search customer / VIN" v-model="searchQuery" />
+                        <input type="text" class="form-control search-addon" :placeholder="$t('bookings.searchCustomer')" v-model="searchQuery" />
                     </div>
                 </div>
 
@@ -47,10 +47,10 @@
                             </template>
                             <template v-if="column.key === 'Deposit'">
                                 <span class="fw-semibold">{{ money(record.deposit) }}</span>
-                                <div class="fs-13 text-muted">of {{ money(record.total) }}</div>
+                                <div class="fs-13 text-muted">{{ $t('bookings.of') }} {{ money(record.total) }}</div>
                             </template>
                             <template v-if="column.key === 'Status'">
-                                <span class="badge" :class="statusClass(record.status)">{{ record.status }}</span>
+                                <span class="badge" :class="statusClass(record.status)">{{ statusLabel(record.status) }}</span>
                             </template>
                             <template v-if="column.key === 'Action'">
                                 <div class="text-end">
@@ -60,9 +60,9 @@
                                             <i class="icon-ellipsis-vertical"></i>
                                         </button>
                                         <ul class="dropdown-menu p-3">
-                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="openDetail('Booking', record)"><i class="icon-eye me-2"></i>View Booking</a></li>
-                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="setStatus(record, 'Confirmed')"><i class="icon-check me-2"></i>Confirm</a></li>
-                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="setStatus(record, 'Cancelled')"><i class="icon-x me-2"></i>Cancel / Release</a></li>
+                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="openDetail('Booking', record)"><i class="icon-eye me-2"></i>{{ $t('bookings.viewBooking') }}</a></li>
+                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="setStatus(record, 'Confirmed')"><i class="icon-check me-2"></i>{{ $t('bookings.confirm') }}</a></li>
+                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="setStatus(record, 'Cancelled')"><i class="icon-x me-2"></i>{{ $t('bookings.cancelRelease') }}</a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -80,7 +80,7 @@
 
     <div class="offcanvas offcanvas-end" tabindex="-1" id="add_booking">
         <div class="offcanvas-header d-flex align-items-center justify-content-between">
-            <h4 class="offcanvas-title mb-0">New Booking</h4>
+            <h4 class="offcanvas-title mb-0">{{ $t('bookings.newBooking') }}</h4>
             <button type="button" class="btn-close btn-close-modal" data-bs-dismiss="offcanvas" aria-label="Close">
                 <i class="icon-x"></i>
             </button>
@@ -90,37 +90,37 @@
                 <div class="row gx-3">
                     <div class="col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Customer<span class="text-danger"> *</span></label>
-                            <vue-select :options="customerNames" v-model="form.customer" placeholder="Select" />
+                            <label class="form-label">{{ $t('bookings.customer') }}<span class="text-danger"> *</span></label>
+                            <vue-select :options="customerNames" v-model="form.customer" :placeholder="$t('common.select')" />
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Reserved Vehicle (VIN)<span class="text-danger"> *</span></label>
-                            <vue-select :options="vinOptions" v-model="form.vin" placeholder="Select VIN" />
+                            <label class="form-label">{{ $t('bookings.reservedVehicleVIN') }}<span class="text-danger"> *</span></label>
+                            <vue-select :options="vinOptions" v-model="form.vin" :placeholder="$t('bookings.selectVin')" />
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Deposit</label>
+                            <label class="form-label">{{ $t('bookings.deposite') }}</label>
                             <input type="number" class="form-control" v-model="form.deposit">
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Total</label>
+                            <label class="form-label">{{ $t('bookings.total') }}</label>
                             <input type="number" class="form-control" v-model="form.total">
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Expiry Date</label>
+                            <label class="form-label">{{ $t('bookings.expiryDate') }}</label>
                             <input type="date" class="form-control" v-model="form.expiry">
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Cancellation / Refund Terms</label>
+                            <label class="form-label">{{ $t('bookings.cancellationRefundTerms') }}</label>
                             <input type="text" class="form-control" v-model="form.terms">
                         </div>
                     </div>
@@ -128,10 +128,10 @@
             </div>
             <div class="offcanvas-footer d-flex align-items-center gap-2 pt-2">
                 <button type="button" class="btn btn-dark d-flex align-items-center w-100" data-bs-dismiss="offcanvas">
-                    <i class="icon-x me-1"></i>Cancel
+                    <i class="icon-x me-1"></i>{{ $t('common.cancel') }}
                 </button>
                 <button type="submit" class="btn btn-primary d-flex align-items-center w-100">
-                    <i class="icon-circle-check me-1"></i>Book
+                    <i class="icon-circle-check me-1"></i>{{ $t('bookings.book') }}
                 </button>
             </div>
         </form>
@@ -162,20 +162,20 @@ export default {
             pageSize: 10,
             pageSizeOptions: [5, 10, 25, 50, 100],
             form: this.emptyForm(),
-            columns: [
-                { title: "Booking", dataIndex: "id", key: "Booking", sorter: false, visible: true },
-                { title: "Vehicle", dataIndex: "vehicle", key: "Vehicle", sorter: false, visible: true },
-                { title: "Deposit", dataIndex: "deposit", key: "Deposit", sorter: false, visible: true },
-                { title: "Expiry", dataIndex: "expiry", key: "expiry", sorter: false, visible: true },
-                { title: "Terms", dataIndex: "terms", key: "terms", sorter: false, visible: true },
-                { title: "Status", dataIndex: "status", key: "Status", sorter: false, visible: true },
-                { title: "Action", dataIndex: "Action", key: "Action", sorter: false, visible: true },
-            ],
         }
     },
     methods: {
         emptyForm() {
             return { customer: null, vin: null, deposit: '', total: '', expiry: '', terms: '' }
+        },
+        statusLabel(status) {
+            const key = {
+                Pending: 'pending',
+                Confirmed: 'confirmed',
+                Expired: 'expired',
+                Cancelled: 'cancelled',
+            }[status]
+            return key ? this.$t(`bookings.${key}`) : status
         },
         statusClass(status) {
             if (status === 'Confirmed') return 'badge-soft-success text-dark'
@@ -206,6 +206,17 @@ export default {
         onPageSizeChange(size) { this.pageSize = Number(size); this.currentPage = 1 },
     },
     computed: {
+        columns() {
+            return [
+                { title: this.$t('bookings.booking'),  dataIndex: "id",      key: "Booking", sorter: false, visible: true },
+                { title: this.$t('bookings.vehicle'),  dataIndex: "vehicle", key: "Vehicle", sorter: false, visible: true },
+                { title: this.$t('bookings.deposite'), dataIndex: "deposit", key: "Deposit", sorter: false, visible: true },
+                { title: this.$t('bookings.expiry'),   dataIndex: "expiry",  key: "expiry",  sorter: false, visible: true },
+                { title: this.$t('bookings.terms'),    dataIndex: "terms",   key: "terms",   sorter: false, visible: true },
+                { title: this.$t('bookings.status'),   dataIndex: "status",  key: "Status",  sorter: false, visible: true },
+                { title: this.$t('bookings.action'),   dataIndex: "Action",  key: "Action",  sorter: false, visible: true },
+            ]
+        },
         filteredPages() {
             const query = this.searchQuery.toLowerCase()
             return this.bookings.filter((record) => {

@@ -6,18 +6,18 @@
             <div class="content-wrap">
                 <div class="d-flex align-items-center flex-wrap gap-3 border-bottom pb-4 mb-4">
                     <div class="flex-grow-1">
-                        <h4 class="mb-1">Service Packages</h4>
-                        <p class="text-muted mb-0">Package definitions, usage deduction and transfer rules.</p>
+                        <h4 class="mb-1">{{ $t('ServicePackages.title') }}</h4>
+                        <p class="text-muted mb-0">{{ $t('ServicePackages.subtitle') }}</p>
                     </div>
                     <a href="#" class="btn btn-primary d-inline-flex align-items-center" data-bs-toggle="offcanvas"
-                        data-bs-target="#add_package"><i class="icon-plus me-1"></i>New Package</a>
+                        data-bs-target="#add_package"><i class="icon-plus me-1"></i>{{ $t('ServicePackages.newPackage') }}</a>
                 </div>
 
                 <div class="row g-4 mb-4">
                     <div class="col-xxl-3 col-md-6">
                         <div class="card dash-card mb-0">
                             <div class="card-body">
-                                <h6 class="mb-2">Active Packages</h6>
+                                <h6 class="mb-2">{{ $t('ServicePackages.activePackages') }}</h6>
                                 <h3 class="mb-0">{{ statusCount('Active') }}</h3>
                             </div>
                         </div>
@@ -25,7 +25,7 @@
                     <div class="col-xxl-3 col-md-6">
                         <div class="card dash-card mb-0">
                             <div class="card-body">
-                                <h6 class="mb-2">Completed</h6>
+                                <h6 class="mb-2">{{ $t('ServicePackages.completed') }}</h6>
                                 <h3 class="mb-0 text-muted">{{ statusCount('Completed') }}</h3>
                             </div>
                         </div>
@@ -33,7 +33,7 @@
                     <div class="col-xxl-3 col-md-6">
                         <div class="card dash-card mb-0">
                             <div class="card-body">
-                                <h6 class="mb-2">Remaining Uses</h6>
+                                <h6 class="mb-2">{{ $t('ServicePackages.remainingUses') }}</h6>
                                 <h3 class="mb-0 text-success">{{ totalRemaining }}</h3>
                             </div>
                         </div>
@@ -41,7 +41,7 @@
                     <div class="col-xxl-3 col-md-6">
                         <div class="card dash-card mb-0">
                             <div class="card-body">
-                                <h6 class="mb-2">Used Uses</h6>
+                                <h6 class="mb-2">{{ $t('ServicePackages.usedUses') }}</h6>
                                 <h3 class="mb-0">{{ totalUsed }}</h3>
                             </div>
                         </div>
@@ -52,17 +52,17 @@
                     <div class="dropdown">
                         <a href="javascript:void(0);" class="dropdown-toggle btn btn-white d-inline-flex align-items-center"
                             data-bs-toggle="dropdown">
-                            <i class="icon-circle-dot text-dark me-2"></i>{{ statusFilter === 'All' ? 'All Status' : statusFilter }}
+                            <i class="icon-circle-dot text-dark me-2"></i>{{ statusFilter === 'All' ? $t('ServicePackages.allStatus') : statusLabel(statusFilter) }}
                         </a>
                         <ul class="dropdown-menu p-3">
                             <li v-for="s in statusOptions" :key="s">
-                                <a href="javascript:void(0);" class="dropdown-item rounded" @click="statusFilter = s">{{ s }}</a>
+                                <a href="javascript:void(0);" class="dropdown-item rounded" @click="statusFilter = s">{{ s === 'All' ? $t('ServicePackages.all') : statusLabel(s) }}</a>
                             </li>
                         </ul>
                     </div>
                     <div class="search-input">
                         <span class="btn-searchset"><i class="icon-search fs-14"></i></span>
-                        <input type="text" class="form-control search-addon" placeholder="Search package / customer" v-model="searchQuery" />
+                        <input type="search" class="form-control search-addon" :placeholder="$t('ServicePackages.searchPlaceholder')" v-model="searchQuery" />
                     </div>
                 </div>
 
@@ -99,29 +99,30 @@
                                     </div>
                                     <span class="fs-13 fw-semibold text-nowrap">{{ record.used }}/{{ record.usageAllowance }}</span>
                                 </div>
-                                <div class="fs-13 text-muted">{{ packageRemaining(record) }} remaining</div>
+                                <div class="fs-13 text-muted">{{ packageRemaining(record) }} {{ $t('ServicePackages.remaining') }}</div>
                             </template>
                             <template v-if="column.key === 'Status'">
                                 <span class="badge" :class="record.status === 'Active' ? 'badge-soft-success text-dark' : 'badge-soft-secondary text-dark'">
-                                    {{ record.status }}
+                                    {{ statusLabel(record.status) }}
                                 </span>
                             </template>
+                            <template v-if="column.key === 'transferable'">{{ transferableLabel(record.transferable) }}</template>
                             <template v-if="column.key === 'Action'">
                                 <div class="text-end">
                                     <div class="dropstart">
                                         <button class="btn btn-icon btn-white" type="button" data-bs-toggle="dropdown"
-                                            aria-label="Actions">
+                                            :aria-label="$t('ServicePackages.actions')">
                                             <i class="icon-ellipsis-vertical"></i>
                                         </button>
                                         <ul class="dropdown-menu p-3">
                                             <li>
                                                 <a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center"
                                                     :class="{ disabled: packageRemaining(record) <= 0 }" @click="usePackage(record)">
-                                                    <i class="icon-circle-check me-2"></i>Redeem on Job Card
+                                                    <i class="icon-circle-check me-2"></i>{{ $t('ServicePackages.redeemOnJobCard') }}
                                                 </a>
                                             </li>
-                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#transfer_pkg_modal" @click="openTransfer(record)"><i class="icon-arrow-left-right me-2"></i>Transfer Package</a></li>
-                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="viewUsage(record)"><i class="icon-eye me-2"></i>View Usage History</a></li>
+                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#transfer_pkg_modal" @click="openTransfer(record)"><i class="icon-arrow-left-right me-2"></i>{{ $t('ServicePackages.transferPackage') }}</a></li>
+                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="viewUsage(record)"><i class="icon-eye me-2"></i>{{ $t('ServicePackages.viewUsageHistory') }}</a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -139,8 +140,8 @@
 
     <div class="offcanvas offcanvas-end" tabindex="-1" id="add_package">
         <div class="offcanvas-header d-flex align-items-center justify-content-between">
-            <h4 class="offcanvas-title mb-0">New Service Package</h4>
-            <button type="button" class="btn-close btn-close-modal" data-bs-dismiss="offcanvas" aria-label="Close">
+            <h4 class="offcanvas-title mb-0">{{ $t('ServicePackages.newServicePackage') }}</h4>
+            <button type="button" class="btn-close btn-close-modal" data-bs-dismiss="offcanvas" :aria-label="$t('ServicePackages.close')">
                 <i class="icon-x"></i>
             </button>
         </div>
@@ -149,60 +150,60 @@
                 <div class="row gx-3">
                     <div class="col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Package Name<span class="text-danger"> *</span></label>
+                            <label class="form-label">{{ $t('ServicePackages.packageName') }}<span class="text-danger"> *</span></label>
                             <input type="text" class="form-control" v-model="form.name" required>
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Customer</label>
+                            <label class="form-label">{{ $t('ServicePackages.customer') }}</label>
                             <input type="text" class="form-control" v-model="form.customer">
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Vehicle</label>
+                            <label class="form-label">{{ $t('ServicePackages.vehicle') }}</label>
                             <input type="text" class="form-control" v-model="form.vehicle">
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Included Services &amp; Parts</label>
+                            <label class="form-label">{{ $t('ServicePackages.includedServices') }}</label>
                             <input type="text" class="form-control" v-model="form.includedServices">
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Start Date</label>
+                            <label class="form-label">{{ $t('ServicePackages.startDate') }}</label>
                             <input type="date" class="form-control" v-model="form.startDate">
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Expiry Date</label>
+                            <label class="form-label">{{ $t('ServicePackages.expiryDate') }}</label>
                             <input type="date" class="form-control" v-model="form.expiryDate">
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Usage Allowance</label>
+                            <label class="form-label">{{ $t('ServicePackages.usageAllowance') }}</label>
                             <input type="number" class="form-control" v-model="form.usageAllowance">
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Transferable</label>
-                            <vue-select :options="['Yes', 'No']" v-model="form.transferable" placeholder="Select" />
+                            <label class="form-label">{{ $t('ServicePackages.transferable') }}</label>
+                            <vue-select :options="transferableOptions" label="label" :reduce="option => option.value" v-model="form.transferable" :placeholder="$t('ServicePackages.select')" />
                         </div>
                     </div>
                 </div>
             </div>
             <div class="offcanvas-footer d-flex align-items-center gap-2 pt-2">
                 <button type="button" class="btn btn-dark d-flex align-items-center w-100" data-bs-dismiss="offcanvas">
-                    <i class="icon-x me-1"></i>Cancel
+                    <i class="icon-x me-1"></i>{{ $t('ServicePackages.cancel') }}
                 </button>
                 <button type="submit" class="btn btn-primary d-flex align-items-center w-100">
-                    <i class="icon-circle-check me-1"></i>Save
+                    <i class="icon-circle-check me-1"></i>{{ $t('ServicePackages.save') }}
                 </button>
             </div>
         </form>
@@ -213,23 +214,23 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Transfer Package</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">{{ $t('ServicePackages.transferPackage') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" :aria-label="$t('ServicePackages.close')"></button>
                 </div>
                 <div class="modal-body" v-if="transferItem">
-                    <p class="mb-3">{{ transferItem.name }} · currently with {{ transferItem.customer }}</p>
+                    <p class="mb-3">{{ transferItem.name }} · {{ $t('ServicePackages.currentlyWith') }} {{ transferItem.customer }}</p>
                     <div class="mb-3">
-                        <label class="form-label">Transfer To (Customer)</label>
+                    <label class="form-label">{{ $t('ServicePackages.transferTo') }}</label>
                         <input type="text" class="form-control" v-model="transferTo">
                     </div>
                     <div class="mb-0">
-                        <label class="form-label">Vehicle</label>
+                        <label class="form-label">{{ $t('ServicePackages.vehicle') }}</label>
                         <input type="text" class="form-control" v-model="transferVehicle">
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="applyTransfer">Transfer</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ $t('ServicePackages.cancel') }}</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="applyTransfer">{{ $t('ServicePackages.transfer') }}</button>
                 </div>
             </div>
         </div>
@@ -259,16 +260,6 @@ export default {
             pageSize: 10,
             pageSizeOptions: [5, 10, 25, 50, 100],
             form: this.emptyForm(),
-            columns: [
-                { title: "Package", dataIndex: "name", key: "Package", sorter: false, visible: true },
-                { title: "Customer", dataIndex: "customer", key: "Customer", sorter: false, visible: true },
-                { title: "Included", dataIndex: "includedServices", key: "Included", sorter: false, visible: true },
-                { title: "Validity", dataIndex: "startDate", key: "Validity", sorter: false, visible: true },
-                { title: "Usage", dataIndex: "used", key: "Usage", sorter: false, visible: true },
-                { title: "Transferable", dataIndex: "transferable", key: "transferable", sorter: false, visible: true },
-                { title: "Status", dataIndex: "status", key: "Status", sorter: false, visible: true },
-                { title: "Action", dataIndex: "Action", key: "Action", sorter: false, visible: true },
-            ],
         }
     },
     methods: {
@@ -278,6 +269,13 @@ export default {
                 startDate: '', expiryDate: '', usageAllowance: '', transferable: null,
             }
         },
+        statusLabel(status) {
+            const keys = { Active: 'active', Completed: 'completed', Expired: 'expired' }
+            return keys[status] ? this.$t(`ServicePackages.statuses.${keys[status]}`) : status
+        },
+        transferableLabel(value) {
+            return value === 'Yes' ? this.$t('ServicePackages.yes') : this.$t('ServicePackages.no')
+        },
         usagePercent(record) {
             if (!record.usageAllowance) return 0
             return Math.min(100, Math.round((record.used / record.usageAllowance) * 100))
@@ -286,7 +284,7 @@ export default {
             if (packageRemaining(record) <= 0) return
             record.used += 1
             if (packageRemaining(record) <= 0) record.status = 'Completed'
-            notify(`${record.name} redeemed on Job Card (${packageRemaining(record)} left)`)
+            notify(this.$t('ServicePackages.packageRedeemed', { name: record.name, count: packageRemaining(record) }))
         },
         openTransfer(record) {
             this.transferItem = record
@@ -297,11 +295,11 @@ export default {
             if (this.transferItem && this.transferTo.trim()) {
                 this.transferItem.customer = this.transferTo
                 this.transferItem.vehicle = this.transferVehicle
-                notify(`Package transferred to ${this.transferTo}`)
+                notify(this.$t('ServicePackages.packageTransferred', { name: this.transferTo }))
             }
         },
         viewUsage(record) {
-            openDetail('Package Usage History', {
+            openDetail(this.$t('ServicePackages.usageHistory'), {
                 package: record.name,
                 customer: record.customer,
                 vehicle: record.vehicle,
@@ -339,6 +337,24 @@ export default {
         onPageSizeChange(size) { this.pageSize = Number(size); this.currentPage = 1 },
     },
     computed: {
+        columns() {
+            return [
+                { title: this.$t('ServicePackages.package'), dataIndex: 'name', key: 'Package', sorter: false, visible: true },
+                { title: this.$t('ServicePackages.customer'), dataIndex: 'customer', key: 'Customer', sorter: false, visible: true },
+                { title: this.$t('ServicePackages.included'), dataIndex: 'includedServices', key: 'Included', sorter: false, visible: true },
+                { title: this.$t('ServicePackages.validity'), dataIndex: 'startDate', key: 'Validity', sorter: false, visible: true },
+                { title: this.$t('ServicePackages.usage'), dataIndex: 'used', key: 'Usage', sorter: false, visible: true },
+                { title: this.$t('ServicePackages.transferable'), dataIndex: 'transferable', key: 'transferable', sorter: false, visible: true },
+                { title: this.$t('ServicePackages.status'), dataIndex: 'status', key: 'Status', sorter: false, visible: true },
+                { title: this.$t('ServicePackages.action'), dataIndex: 'Action', key: 'Action', sorter: false, visible: true },
+            ]
+        },
+        transferableOptions() {
+            return [
+                { value: 'Yes', label: this.$t('ServicePackages.yes') },
+                { value: 'No', label: this.$t('ServicePackages.no') },
+            ]
+        },
         totalRemaining() {
             return this.servicePackages.reduce((sum, p) => sum + packageRemaining(p), 0)
         },

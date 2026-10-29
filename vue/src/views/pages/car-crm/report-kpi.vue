@@ -126,7 +126,7 @@ export default {
     computed: {
         sellers() {
             return targets.map((t) => {
-                const c = commissionConfig.find((x) => x.name === t.name) || {}
+                const c = commissionConfig.find((x) => x.name === t.name && x.active) || {}
                 return {
                     ...t,
                     target: c.unitTarget ?? t.target,

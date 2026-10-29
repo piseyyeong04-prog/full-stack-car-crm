@@ -6,21 +6,21 @@
             <div class="content-wrap">
                 <div class="d-flex align-items-center flex-wrap gap-3 border-bottom pb-4 mb-4">
                     <div class="flex-grow-1">
-                        <h4 class="mb-1">Commission &amp; Monthly Closing</h4>
-                        <p class="text-muted mb-0">Review, adjust, approve and lock monthly results and rewards.</p>
+                        <h4 class="mb-1">{{ $t('CommissionClosing.title') }}</h4>
+                        <p class="text-muted mb-0">{{ $t('CommissionClosing.subtitle') }}</p>
                     </div>
                     <div class="d-flex align-items-center gap-2">
                         <router-link :to="lp('/targets/commission-settings')" class="btn btn-white d-inline-flex align-items-center">
-                            <i class="icon-sliders-horizontal me-1"></i>Configure
+                            <i class="icon-sliders-horizontal me-1"></i>{{ $t('CommissionClosing.configure') }}
                         </router-link>
                         <div class="dropdown">
                             <a href="javascript:void(0);" class="dropdown-toggle btn btn-dark d-inline-flex align-items-center"
                                 data-bs-toggle="dropdown">
-                                <i class="icon-calendar me-1"></i>{{ selectedMonth }}
+                                <i class="icon-calendar me-1"></i>{{ monthLabel(selectedMonth) }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end p-3">
                                 <li v-for="m in months" :key="m">
-                                    <a href="javascript:void(0);" class="dropdown-item rounded" @click="selectMonth(m)">{{ m }}</a>
+                                    <a href="javascript:void(0);" class="dropdown-item rounded" @click="selectMonth(m)">{{ monthLabel(m) }}</a>
                                 </li>
                             </ul>
                         </div>
@@ -36,17 +36,17 @@
                                     <div class="d-flex align-items-center gap-2">
                                         <span class="avatar avatar-sm rounded-circle"
                                             :class="i <= closingStep ? 'bg-primary text-white' : 'bg-light text-dark'">{{ i + 1 }}</span>
-                                        <span class="fw-semibold" :class="i <= closingStep ? 'text-dark' : 'text-muted'">{{ step }}</span>
+                                        <span class="fw-semibold" :class="i <= closingStep ? 'text-dark' : 'text-muted'">{{ $t(`CommissionClosing.${step.toLowerCase()}`) }}</span>
                                     </div>
                                     <i v-if="i < workflow.length - 1" class="icon-chevron-right text-muted"></i>
                                 </div>
                             </div>
                             <div class="d-flex align-items-center gap-2">
                                 <button class="btn btn-white" :disabled="closingStep === 0" @click="closingStep--">
-                                    <i class="icon-undo-2 me-1"></i>Back
+                                    <i class="icon-undo-2 me-1"></i>{{ $t('CommissionClosing.back') }}
                                 </button>
                                 <button class="btn btn-primary" :disabled="closingStep >= workflow.length - 1" @click="closingStep++">
-                                    {{ closingStep === workflow.length - 1 ? 'Locked' : workflow[closingStep + 1] }}
+                                    {{ closingStep === workflow.length - 1 ? $t('CommissionClosing.locked') : $t(`CommissionClosing.${workflow[closingStep + 1].toLowerCase()}`) }}
                                     <i class="icon-chevron-right ms-1"></i>
                                 </button>
                             </div>
@@ -54,8 +54,7 @@
                         <div class="alert alert-warning mt-4 mb-0 d-flex align-items-start gap-2">
                             <i class="icon-info mt-1"></i>
                             <div class="fs-13">
-                                Policy values (commission rate, bonus levels, split, refund adjustments) are configurable.
-                                Reopening a locked month requires permission and a recorded history.
+                                {{ $t('CommissionClosing.closingNote') }}
                             </div>
                         </div>
                     </div>
@@ -65,7 +64,7 @@
                     <div class="col-xxl-4 col-md-6">
                         <div class="card dash-card mb-0">
                             <div class="card-body">
-                                <h6 class="mb-2">Total Commission</h6>
+                                <h6 class="mb-2">{{ $t('CommissionClosing.totalCommission') }}</h6>
                                 <h3 class="mb-0">{{ money(totalCommission) }}</h3>
                             </div>
                         </div>
@@ -73,7 +72,7 @@
                     <div class="col-xxl-4 col-md-6">
                         <div class="card dash-card mb-0">
                             <div class="card-body">
-                                <h6 class="mb-2">Total Bonus</h6>
+                                <h6 class="mb-2">{{ $t('CommissionClosing.totalBonus') }}</h6>
                                 <h3 class="mb-0">{{ money(totalBonus) }}</h3>
                             </div>
                         </div>
@@ -81,7 +80,7 @@
                     <div class="col-xxl-4 col-md-12">
                         <div class="card dash-card mb-0">
                             <div class="card-body">
-                                <h6 class="mb-2">Payout</h6>
+                                <h6 class="mb-2">{{ $t('CommissionClosing.payout') }}</h6>
                                 <h3 class="mb-0 text-success">{{ money(totalCommission + totalBonus) }}</h3>
                             </div>
                         </div>
@@ -91,23 +90,23 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="card-header pt-0 ps-0 pe-0 mb-4 d-flex align-items-center justify-content-between">
-                            <h5 class="mb-0">Monthly Results</h5>
+                            <h5 class="mb-0">{{ $t('CommissionClosing.monthlyResults') }}</h5>
                             <span class="badge" :class="closingStep >= 3 ? 'badge-soft-success text-dark' : 'badge-soft-warning text-dark'">
-                                {{ workflow[closingStep] }}
+                                {{ $t(`CommissionClosing.${workflow[closingStep].toLowerCase()}`) }}
                             </span>
                         </div>
                         <div class="table-responsive table-nowrap">
                             <table class="table mb-0">
                                 <thead class="table-light">
                                     <tr>
-                                        <th class="no-sort">Salesperson</th>
-                                        <th>Target</th>
-                                        <th>Actual</th>
-                                        <th>Achievement</th>
-                                        <th>Commission</th>
-                                        <th>Bonus</th>
-                                        <th class="text-end">Total Payout</th>
-                                        <th class="no-sort text-end">Action</th>
+                                        <th class="no-sort">{{ $t('CommissionClosing.salesperson') }}</th>
+                                        <th>{{ $t('CommissionClosing.target') }}</th>
+                                        <th>{{ $t('CommissionClosing.actual') }}</th>
+                                        <th>{{ $t('CommissionClosing.achievement') }}</th>
+                                        <th>{{ $t('CommissionClosing.commission') }}</th>
+                                        <th>{{ $t('CommissionClosing.bonus') }}</th>
+                                        <th class="text-end">{{ $t('CommissionClosing.totalPayout') }}</th>
+                                        <th class="no-sort text-end">{{ $t('CommissionClosing.action') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -135,7 +134,7 @@
                                         <td class="text-end fw-semibold">{{ money(commissionOf(s) + bonusOf(s)) }}</td>
                                         <td class="text-end">
                                             <button class="btn btn-sm btn-white d-inline-flex align-items-center" @click="viewStatement(s)">
-                                                <i class="icon-file-text me-1"></i>Statement
+                                                <i class="icon-file-text me-1"></i>{{ $t('CommissionClosing.statement') }}
                                             </button>
                                         </td>
                                     </tr>
@@ -153,7 +152,7 @@
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content comm-modal">
                 <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title">Commission Statement</h5>
+                    <h5 class="modal-title">{{ $t('CommissionClosing.statementTitle') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" v-if="statement">
@@ -164,44 +163,44 @@
                                 <div>
                                     <h5 class="mb-0">Dreams Motors Co., Ltd.</h5>
                                     <p class="mb-0">No. 128, Preah Norodom Blvd, Phnom Penh, Cambodia</p>
-                                    <p class="mb-0">Tel: +855 23 900 900 · sales@dreamsmotors.com.kh</p>
+                                    <p class="mb-0">{{ $t('CommissionClosing.telephone') }}: +855 23 900 900 · sales@dreamsmotors.com.kh</p>
                                 </div>
                             </div>
                             <div class="comm-title">
-                                <h3>COMMISSION</h3>
+                                <h3>{{ $t('CommissionClosing.statementTitle') }}</h3>
                                 <p class="mb-0"><strong>{{ statementNo }}</strong></p>
-                                <p class="mb-0">Period: {{ selectedMonth }}</p>
-                                <p class="mb-0">Issued: {{ statementDate }}</p>
+                                <p class="mb-0">{{ $t('CommissionClosing.period') }}: {{ monthLabel(selectedMonth) }}</p>
+                                <p class="mb-0">{{ $t('CommissionClosing.issued') }}: {{ statementDate }}</p>
                             </div>
                         </div>
 
                         <div class="comm-grid">
                             <div>
-                                <p class="comm-label">Salesperson</p>
+                                <p class="comm-label">{{ $t('CommissionClosing.salesperson') }}</p>
                                 <h6 class="mb-1">{{ statement.name }}</h6>
                                 <p class="mb-0">{{ statement.team }}</p>
                             </div>
                             <div>
-                                <p class="comm-label">Sales Target</p>
-                                <h6 class="mb-1">{{ statement.actual }} / {{ statement.target }} units</h6>
-                                <p class="mb-0">{{ achievement(statement.actual, statement.target) }}% achieved</p>
+                                <p class="comm-label">{{ $t('CommissionClosing.salesTarget') }}</p>
+                                <h6 class="mb-1">{{ statement.actual }} / {{ statement.target }} {{ $t('CommissionClosing.units') }}</h6>
+                                <p class="mb-0">{{ achievement(statement.actual, statement.target) }}% {{ $t('CommissionClosing.achieved') }}</p>
                             </div>
                             <div>
-                                <p class="comm-label">Commission Rate</p>
+                                <p class="comm-label">{{ $t('CommissionClosing.commissionRate') }}</p>
                                 <h6 class="mb-1">{{ statementRate.toFixed(1) }}%</h6>
-                                <p class="mb-0">of sale value</p>
+                                <p class="mb-0">{{ $t('CommissionClosing.ofSaleValue') }}</p>
                             </div>
                         </div>
 
                         <table class="comm-table">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Ref</th>
-                                    <th>Customer / Vehicle</th>
-                                    <th class="text-end">Sale Amount</th>
-                                    <th class="text-end">Rate</th>
-                                    <th class="text-end">Commission</th>
+                                    <th>{{ $t('CommissionClosing.date') }}</th>
+                                    <th>{{ $t('CommissionClosing.reference') }}</th>
+                                    <th>{{ $t('CommissionClosing.customerVehicle') }}</th>
+                                    <th class="text-end">{{ $t('CommissionClosing.saleAmount') }}</th>
+                                    <th class="text-end">{{ $t('CommissionClosing.rate') }}</th>
+                                    <th class="text-end">{{ $t('CommissionClosing.commission') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -217,7 +216,7 @@
                                     <td class="text-end">{{ money(s.commission) }}</td>
                                 </tr>
                                 <tr v-if="!statementSales.length">
-                                    <td colspan="6" class="text-center text-muted py-4">No sales recorded for this period.</td>
+                                    <td colspan="6" class="text-center text-muted py-4">{{ $t('CommissionClosing.noSales') }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -225,33 +224,33 @@
                         <div class="comm-summary">
                             <div class="comm-stamp" :class="statementStampClass">{{ statementStampText }}</div>
                             <div class="comm-totals">
-                                <div class="row"><span>Total Sales ({{ statementSales.length }} units)</span><span>{{ money(statementTotalSales) }}</span></div>
-                                <div class="row"><span>Sales Commission ({{ statementRate.toFixed(1) }}%)</span><span>{{ money(statementTotalCommission) }}</span></div>
-                                <div class="row"><span>Target Bonus</span><span>{{ money(bonusOf(statement)) }}</span></div>
-                                <div class="row grand"><span>Net Payout</span><span>{{ money(statementTotalCommission + bonusOf(statement)) }}</span></div>
+                                <div class="row"><span>{{ $t('CommissionClosing.totalSales', { count: statementSales.length }) }}</span><span>{{ money(statementTotalSales) }}</span></div>
+                                <div class="row"><span>{{ $t('CommissionClosing.salesCommission', { rate: statementRate.toFixed(1) }) }}</span><span>{{ money(statementTotalCommission) }}</span></div>
+                                <div class="row"><span>{{ $t('CommissionClosing.targetBonus') }}</span><span>{{ money(bonusOf(statement)) }}</span></div>
+                                <div class="row grand"><span>{{ $t('CommissionClosing.netPayout') }}</span><span>{{ money(statementTotalCommission + bonusOf(statement)) }}</span></div>
                             </div>
                         </div>
 
                         <div class="comm-terms">
-                            <p class="comm-label">Notes</p>
+                            <p class="comm-label">{{ $t('CommissionClosing.notes') }}</p>
                             <ul class="mb-0">
-                                <li>Commission is calculated at {{ statementRate.toFixed(1) }}% of the recognized sale value.</li>
-                                <li>Bonus applies when the unit target is met; each extra unit adds a further reward.</li>
-                                <li>Adjustments for refunds or cancelled sales follow the approved closing policy.</li>
+                                <li>{{ $t('CommissionClosing.commissionNote', { rate: statementRate.toFixed(1) }) }}</li>
+                                <li>{{ $t('CommissionClosing.bonusNote') }}</li>
+                                <li>{{ $t('CommissionClosing.adjustmentNote') }}</li>
                             </ul>
                         </div>
 
                         <div class="comm-foot">
-                            <div class="comm-sign"><p class="mb-1">Prepared By</p></div>
-                            <div class="comm-sign"><p class="mb-1">Approved By</p></div>
-                            <div class="comm-sign"><p class="mb-1">Received By</p></div>
+                            <div class="comm-sign"><p class="mb-1">{{ $t('CommissionClosing.preparedBy') }}</p></div>
+                            <div class="comm-sign"><p class="mb-1">{{ $t('CommissionClosing.approvedBy') }}</p></div>
+                            <div class="comm-sign"><p class="mb-1">{{ $t('CommissionClosing.receivedBy') }}</p></div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal"><i class="icon-x me-1"></i>Close</button>
-                    <button type="button" class="btn btn-white" @click="downloadStatement"><i class="icon-download me-1"></i>Save as PDF</button>
-                    <button type="button" class="btn btn-primary" @click="printStatement"><i class="icon-printer me-1"></i>Print Statement</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal"><i class="icon-x me-1"></i>{{ $t('CommissionClosing.close') }}</button>
+                    <button type="button" class="btn btn-white" @click="downloadStatement"><i class="icon-download me-1"></i>{{ $t('CommissionClosing.savePdf') }}</button>
+                    <button type="button" class="btn btn-primary" @click="printStatement"><i class="icon-printer me-1"></i>{{ $t('CommissionClosing.printStatement') }}</button>
                 </div>
             </div>
         </div>
@@ -321,7 +320,12 @@ export default {
     methods: {
         selectMonth(m) {
             this.selectedMonth = m
-            notify(`Showing closing results for ${m}`)
+            notify(this.$t('CommissionClosing.showingMonth', { month: this.monthLabel(m) }))
+        },
+        monthLabel(month) {
+            const [name, year] = month.split(' ')
+            const monthKey = name.toLowerCase()
+            return `${this.$t(`CommissionClosing.months.${monthKey}`)} ${year}`
         },
         commissionOf(s) {
             return Math.round(s.revenueActual * (s.commissionRate / 100))
@@ -332,7 +336,8 @@ export default {
         },
         viewStatement(t) {
             this.statement = t
-            this.statementDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+            const dateLocale = { en: 'en-GB', km: 'km-KH', zh: 'zh-CN' }[this.$i18n.locale.value] || 'en-GB'
+            this.statementDate = new Date().toLocaleDateString(dateLocale, { day: '2-digit', month: 'short', year: 'numeric' })
             const initials = t.name.split(' ').map((w) => w[0]).join('')
             const monthCode = this.selectedMonth.split(' ')[0].slice(0, 3).toUpperCase()
             this.statementNo = `CS-${initials}-${monthCode}`
@@ -343,17 +348,17 @@ export default {
             if (!el) return
             const win = window.open('', '_blank')
             if (!win) {
-                notify('Please allow pop-ups to print the statement', 'warning')
+                notify(this.$t('CommissionClosing.allowPopups'), 'warning')
                 return
             }
-            win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Commission Statement ${this.statementNo}</title><style>${COMM_PRINT_CSS}</style></head><body>${el.outerHTML}</body></html>`)
+            win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${this.$t('CommissionClosing.statementTitle')} ${this.statementNo}</title><style>${COMM_PRINT_CSS}</style></head><body>${el.outerHTML}</body></html>`)
             win.document.close()
             win.focus()
             setTimeout(() => win.print(), 300)
         },
         downloadStatement() {
             this.printStatement()
-            notify('Choose "Save as PDF" in the print dialog', 'info')
+            notify(this.$t('CommissionClosing.savePdfHint'), 'info')
         },
     },
     computed: {
@@ -394,9 +399,9 @@ export default {
         statementStampText() {
             if (!this.statement) return ''
             const pct = this.achievement(this.statement.actual, this.statement.target)
-            if (pct >= 100) return 'TARGET MET'
-            if (pct >= 75) return 'ON TRACK'
-            return 'BELOW TARGET'
+            if (pct >= 100) return this.$t('CommissionClosing.targetMet')
+            if (pct >= 75) return this.$t('CommissionClosing.onTrack')
+            return this.$t('CommissionClosing.belowTarget')
         },
         totalCommission() {
             return this.sellers.reduce((s, t) => s + this.commissionOf(t), 0)

@@ -6,28 +6,28 @@
             <div class="content-wrap">
                 <div class="d-flex align-items-center flex-wrap gap-3 border-bottom pb-4 mb-4">
                     <div class="flex-grow-1">
-                        <h4 class="mb-1">Parts Purchase Orders</h4>
-                        <p class="text-muted mb-0">Supplier orders, goods receipt, returns and stock transfers.</p>
+                        <h4 class="mb-1">{{ $t('PartsOrders.title') }}</h4>
+                        <p class="text-muted mb-0">{{ $t('PartsOrders.subtitle') }}</p>
                     </div>
                     <a href="#" class="btn btn-primary d-inline-flex align-items-center" data-bs-toggle="offcanvas"
-                        data-bs-target="#add_parts_order"><i class="icon-plus me-1"></i>New Parts Order</a>
+                        data-bs-target="#add_parts_order"><i class="icon-plus me-1"></i>{{ $t('PartsOrders.newOrder') }}</a>
                 </div>
 
                 <div class="d-flex align-items-center flex-wrap gap-3 justify-content-between mb-4">
                     <div class="dropdown">
                         <a href="javascript:void(0);" class="dropdown-toggle btn btn-white d-inline-flex align-items-center"
                             data-bs-toggle="dropdown">
-                            <i class="icon-circle-dot text-dark me-2"></i>{{ statusFilter === 'All' ? 'All Status' : statusFilter }}
+                            <i class="icon-circle-dot text-dark me-2"></i>{{ statusFilter === 'All' ? $t('PartsOrders.allStatus') : statusLabel(statusFilter) }}
                         </a>
                         <ul class="dropdown-menu p-3">
                             <li v-for="s in statusOptions" :key="s">
-                                <a href="javascript:void(0);" class="dropdown-item rounded" @click="statusFilter = s">{{ s }}</a>
+                                <a href="javascript:void(0);" class="dropdown-item rounded" @click="statusFilter = s">{{ s === 'All' ? $t('PartsOrders.all') : statusLabel(s) }}</a>
                             </li>
                         </ul>
                     </div>
                     <div class="search-input">
                         <span class="btn-searchset"><i class="icon-search fs-14"></i></span>
-                        <input type="text" class="form-control search-addon" placeholder="Search supplier" v-model="searchQuery" />
+                        <input type="search" class="form-control search-addon" :placeholder="$t('PartsOrders.searchPlaceholder')" v-model="searchQuery" />
                     </div>
                 </div>
 
@@ -41,19 +41,19 @@
                             </template>
                             <template v-if="column.key === 'Amount'">{{ money(record.amount) }}</template>
                             <template v-if="column.key === 'Status'">
-                                <span class="badge" :class="statusClass(record.status)">{{ record.status }}</span>
+                                <span class="badge" :class="statusClass(record.status)">{{ statusLabel(record.status) }}</span>
                             </template>
                             <template v-if="column.key === 'Action'">
                                 <div class="text-end">
                                     <div class="dropstart">
                                         <button class="btn btn-icon btn-white" type="button" data-bs-toggle="dropdown"
-                                            aria-label="Actions">
+                                            :aria-label="$t('PartsOrders.actions')">
                                             <i class="icon-ellipsis-vertical"></i>
                                         </button>
                                         <ul class="dropdown-menu p-3">
-                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="openDetail('Parts Order', record)"><i class="icon-eye me-2"></i>View Order</a></li>
-                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="setStatus(record, 'Received')"><i class="icon-check me-2"></i>Receive Goods</a></li>
-                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="setStatus(record, 'Returned')"><i class="icon-undo-2 me-2"></i>Supplier Return</a></li>
+                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="openDetail($t('PartsOrders.order'), record)"><i class="icon-eye me-2"></i>{{ $t('PartsOrders.viewOrder') }}</a></li>
+                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="setStatus(record, 'Received')"><i class="icon-check me-2"></i>{{ $t('PartsOrders.receiveGoods') }}</a></li>
+                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="setStatus(record, 'Returned')"><i class="icon-undo-2 me-2"></i>{{ $t('PartsOrders.supplierReturn') }}</a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -71,8 +71,8 @@
 
     <div class="offcanvas offcanvas-end" tabindex="-1" id="add_parts_order">
         <div class="offcanvas-header d-flex align-items-center justify-content-between">
-            <h4 class="offcanvas-title mb-0">New Parts Order</h4>
-            <button type="button" class="btn-close btn-close-modal" data-bs-dismiss="offcanvas" aria-label="Close">
+            <h4 class="offcanvas-title mb-0">{{ $t('PartsOrders.newOrder') }}</h4>
+            <button type="button" class="btn-close btn-close-modal" data-bs-dismiss="offcanvas" :aria-label="$t('PartsOrders.close')">
                 <i class="icon-x"></i>
             </button>
         </div>
@@ -81,25 +81,25 @@
                 <div class="row gx-3">
                     <div class="col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Supplier<span class="text-danger"> *</span></label>
+                            <label class="form-label">{{ $t('PartsOrders.supplier') }}<span class="text-danger"> *</span></label>
                             <input type="text" class="form-control" v-model="form.supplier" required>
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Items</label>
-                            <input type="text" class="form-control" v-model="form.items" placeholder="e.g. 20x Oil Filter">
+                            <label class="form-label">{{ $t('PartsOrders.items') }}</label>
+                            <input type="text" class="form-control" v-model="form.items" :placeholder="$t('PartsOrders.itemsPlaceholder')">
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Amount</label>
+                            <label class="form-label">{{ $t('PartsOrders.amount') }}</label>
                             <input type="number" class="form-control" v-model="form.amount">
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Expected Receipt</label>
+                            <label class="form-label">{{ $t('PartsOrders.expectedReceipt') }}</label>
                             <input type="date" class="form-control" v-model="form.expected">
                         </div>
                     </div>
@@ -107,10 +107,10 @@
             </div>
             <div class="offcanvas-footer d-flex align-items-center gap-2 pt-2">
                 <button type="button" class="btn btn-dark d-flex align-items-center w-100" data-bs-dismiss="offcanvas">
-                    <i class="icon-x me-1"></i>Cancel
+                    <i class="icon-x me-1"></i>{{ $t('PartsOrders.cancel') }}
                 </button>
                 <button type="submit" class="btn btn-primary d-flex align-items-center w-100">
-                    <i class="icon-circle-check me-1"></i>Submit
+                    <i class="icon-circle-check me-1"></i>{{ $t('PartsOrders.submit') }}
                 </button>
             </div>
         </form>
@@ -139,18 +139,13 @@ export default {
             pageSize: 10,
             pageSizeOptions: [5, 10, 25, 50, 100],
             form: { supplier: '', items: '', amount: '', expected: '' },
-            columns: [
-                { title: "Order", dataIndex: "id", key: "Order", sorter: false, visible: true },
-                { title: "Supplier", dataIndex: "supplier", key: "supplier", sorter: false, visible: true },
-                { title: "Amount", dataIndex: "amount", key: "Amount", sorter: false, visible: true },
-                { title: "Ordered", dataIndex: "ordered", key: "ordered", sorter: false, visible: true },
-                { title: "Expected", dataIndex: "expected", key: "expected", sorter: false, visible: true },
-                { title: "Status", dataIndex: "status", key: "Status", sorter: false, visible: true },
-                { title: "Action", dataIndex: "Action", key: "Action", sorter: false, visible: true },
-            ],
         }
     },
     methods: {
+        statusLabel(status) {
+            const keys = { Pending: 'pending', Approved: 'approved', Received: 'received', Returned: 'returned' }
+            return keys[status] ? this.$t(`PartsOrders.statuses.${keys[status]}`) : status
+        },
         statusClass(status) {
             if (status === 'Received') return 'badge-soft-success text-dark'
             if (status === 'Approved') return 'badge-soft-info text-dark'
@@ -159,7 +154,7 @@ export default {
         },
         setStatus(record, status) {
             record.status = status
-            notify(`${record.id} marked ${status}`)
+            notify(this.$t('PartsOrders.statusUpdated', { id: record.id, status: this.statusLabel(status) }))
         },
         addOrder() {
             const today = new Date().toISOString().slice(0, 10)
@@ -179,6 +174,17 @@ export default {
         onPageSizeChange(size) { this.pageSize = Number(size); this.currentPage = 1 },
     },
     computed: {
+        columns() {
+            return [
+                { title: this.$t('PartsOrders.order'), dataIndex: 'id', key: 'Order', sorter: false, visible: true },
+                { title: this.$t('PartsOrders.supplier'), dataIndex: 'supplier', key: 'supplier', sorter: false, visible: true },
+                { title: this.$t('PartsOrders.amount'), dataIndex: 'amount', key: 'Amount', sorter: false, visible: true },
+                { title: this.$t('PartsOrders.ordered'), dataIndex: 'ordered', key: 'ordered', sorter: false, visible: true },
+                { title: this.$t('PartsOrders.expected'), dataIndex: 'expected', key: 'expected', sorter: false, visible: true },
+                { title: this.$t('PartsOrders.status'), dataIndex: 'status', key: 'Status', sorter: false, visible: true },
+                { title: this.$t('PartsOrders.action'), dataIndex: 'Action', key: 'Action', sorter: false, visible: true },
+            ]
+        },
         filteredPages() {
             const query = this.searchQuery.toLowerCase()
             return this.partsOrders.filter((record) => {

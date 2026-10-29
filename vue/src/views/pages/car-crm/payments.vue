@@ -6,18 +6,18 @@
             <div class="content-wrap">
                 <div class="d-flex align-items-center flex-wrap gap-3 border-bottom pb-4 mb-4">
                     <div class="flex-grow-1">
-                        <h4 class="mb-1">Payments</h4>
-                        <p class="text-muted mb-0">Cash collected, partner financing and outstanding balances.</p>
+                        <h4 class="mb-1">{{$t('payments.title')}}</h4>
+                        <p class="text-muted mb-0">{{$t('payments.subtitle')}}</p>
                     </div>
                     <a href="#" class="btn btn-primary d-inline-flex align-items-center" data-bs-toggle="offcanvas"
-                        data-bs-target="#add_payment"><i class="icon-plus me-1"></i>Record Payment</a>
+                        data-bs-target="#add_payment"><i class="icon-plus me-1"></i>{{$t('payments.addRecord')}}</a>
                 </div>
 
                 <div class="row g-4 mb-4">
                     <div class="col-xxl-4 col-md-6">
                         <div class="card dash-card mb-0">
                             <div class="card-body">
-                                <h6 class="mb-2">Total Billed</h6>
+                                <h6 class="mb-2">{{ $t('payments.totalBilled') }}</h6>
                                 <h3 class="mb-0">{{ money(totalBilled) }}</h3>
                             </div>
                         </div>
@@ -25,7 +25,7 @@
                     <div class="col-xxl-4 col-md-6">
                         <div class="card dash-card mb-0">
                             <div class="card-body">
-                                <h6 class="mb-2">Cash Collected</h6>
+                                <h6 class="mb-2">{{$t('payments.cashCollected') }}</h6>
                                 <h3 class="mb-0 text-success">{{ money(totalPaid) }}</h3>
                             </div>
                         </div>
@@ -33,7 +33,7 @@
                     <div class="col-xxl-4 col-md-12">
                         <div class="card dash-card mb-0">
                             <div class="card-body">
-                                <h6 class="mb-2">Outstanding Balance</h6>
+                                <h6 class="mb-2">{{ $t('payments.outstandingBalance')}}</h6>
                                 <h3 class="mb-0 text-danger">{{ money(totalBilled - totalPaid) }}</h3>
                             </div>
                         </div>
@@ -44,17 +44,17 @@
                     <div class="dropdown">
                         <a href="javascript:void(0);" class="dropdown-toggle btn btn-white d-inline-flex align-items-center"
                             data-bs-toggle="dropdown">
-                            <i class="icon-circle-dot text-dark me-2"></i>{{ statusFilter === 'All' ? 'All Status' : statusFilter }}
+                            <i class="icon-circle-dot text-dark me-2"></i>{{ statusFilter === 'All' ? $t('payments.allStatus') : statusLabel(statusFilter) }}
                         </a>
                         <ul class="dropdown-menu p-3">
                             <li v-for="s in statusOptions" :key="s">
-                                <a href="javascript:void(0);" class="dropdown-item rounded" @click="statusFilter = s">{{ s }}</a>
+                                <a href="javascript:void(0);" class="dropdown-item rounded" @click="setStatusFilter(s)">{{ s === 'All'? $t('payments.all'): statusLabel(s)}}</a>
                             </li>
                         </ul>
                     </div>
                     <div class="search-input">
                         <span class="btn-searchset"><i class="icon-search fs-14"></i></span>
-                        <input type="text" class="form-control search-addon" placeholder="Search customer" v-model="searchQuery" />
+                        <input type="search" class="form-control search-addon" :placeholder="$t('payments.searchCustomer')" v-model="searchQuery" />
                     </div>
                 </div>
 
@@ -68,7 +68,7 @@
                             </template>
                             <template v-if="column.key === 'Vehicle'">
                                 <span>{{ record.vehicle }}</span>
-                                <div class="fs-13 text-muted">{{ record.type }} · {{ record.method }}</div>
+                            <div class="fs-13 text-muted">{{ typeLabel(record.type) }} · {{ methodLabel(record.method) }}</div>
                             </template>
                             <template v-if="column.key === 'Total'">{{ money(record.total) }}</template>
                             <template v-if="column.key === 'Paid'">
@@ -80,7 +80,7 @@
                                 </span>
                             </template>
                             <template v-if="column.key === 'Status'">
-                                <span class="badge" :class="statusClass(record.status)">{{ record.status }}</span>
+                                <span class="badge" :class="statusClass(record.status)">{{ statusLabel(record.status) }}</span>
                             </template>
                             <template v-if="column.key === 'Action'">
                                 <div class="text-end">
@@ -90,8 +90,8 @@
                                             <i class="icon-ellipsis-vertical"></i>
                                         </button>
                                         <ul class="dropdown-menu p-3">
-                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="markPaid(record)"><i class="icon-check me-2"></i>Mark as Paid</a></li>
-                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="viewReceipt(record)"><i class="icon-file-text me-2"></i>View Receipt</a></li>
+                                            <li v-if="record.status !== 'Paid'"><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="markPaid(record)"><i class="icon-check me-2"></i>{{$t('payments.markpaid')}}</a></li>
+                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="viewReceipt(record)"><i class="icon-file-text me-2"></i>{{$t('payments.viewReceipt')}}</a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -109,7 +109,7 @@
 
     <div class="offcanvas offcanvas-end" tabindex="-1" id="add_payment">
         <div class="offcanvas-header d-flex align-items-center justify-content-between">
-            <h4 class="offcanvas-title mb-0">Record Payment</h4>
+            <h4 class="offcanvas-title mb-0">{{$t('payments.addRecord')}}</h4>
             <button type="button" class="btn-close btn-close-modal" data-bs-dismiss="offcanvas" aria-label="Close">
                 <i class="icon-x"></i>
             </button>
@@ -119,43 +119,43 @@
                 <div class="row gx-3">
                     <div class="col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Customer<span class="text-danger"> *</span></label>
+                            <label class="form-label">{{$t('payments.customer')}}<span class="text-danger"> *</span></label>
                             <vue-select :options="customerNames" v-model="form.customer" placeholder="Select" />
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Vehicle</label>
+                            <label class="form-label">{{$t('payments.vehicle')}}</label>
                             <input type="text" class="form-control" v-model="form.vehicle">
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Payment Type</label>
+                            <label class="form-label">{{$t('payments.paymentType')}}</label>
                             <vue-select :options="['Cash', 'Financing']" v-model="form.type" placeholder="Select" />
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Method</label>
-                            <input type="text" class="form-control" v-model="form.method" placeholder="e.g. ABA Transfer">
+                            <label class="form-label">{{$t('payments.method')}}</label>
+                            <input type="text" class="form-control" v-model="form.method" :placeholder="$t('payments.methodPlaceholder')">
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Total</label>
-                            <input type="number" class="form-control" v-model="form.total">
+                            <label class="form-label">{{$t('payments.total')}}</label>
+                            <input type="number" min="0.01" step="0.01" required class="form-control" v-model.number="form.total">
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Amount Paid</label>
-                            <input type="number" class="form-control" v-model="form.paid">
+                            <label class="form-label">{{$t('payments.amountPaid')}}</label>
+                            <input type="number" min="0" step="0.01" required class="form-control" v-model.number="form.paid">
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Due Date</label>
+                            <label class="form-label">{{$t('payments.dueDate')}}</label>
                             <input type="date" class="form-control" v-model="form.dueDate">
                         </div>
                     </div>
@@ -163,10 +163,10 @@
             </div>
             <div class="offcanvas-footer d-flex align-items-center gap-2 pt-2">
                 <button type="button" class="btn btn-dark d-flex align-items-center w-100" data-bs-dismiss="offcanvas">
-                    <i class="icon-x me-1"></i>Cancel
+                    <i class="icon-x me-1"></i>{{$t('payments.cancel')}}
                 </button>
                 <button type="submit" class="btn btn-primary d-flex align-items-center w-100">
-                    <i class="icon-circle-check me-1"></i>Save
+                    <i class="icon-circle-check me-1"></i>{{$t('payments.save')}}
                 </button>
             </div>
         </form>
@@ -323,31 +323,35 @@ export default {
             form: this.emptyForm(),
             receipt: null,
             receiptDate: '',
-            columns: [
-                { title: "Payment", dataIndex: "id", key: "Payment", sorter: false, visible: true },
-                { title: "Vehicle", dataIndex: "vehicle", key: "Vehicle", sorter: false, visible: true },
-                { title: "Total", dataIndex: "total", key: "Total", sorter: false, visible: true },
-                { title: "Paid", dataIndex: "paid", key: "Paid", sorter: false, visible: true },
-                { title: "Balance", dataIndex: "balance", key: "Balance", sorter: false, visible: true },
-                { title: "Due Date", dataIndex: "dueDate", key: "dueDate", sorter: false, visible: true },
-                { title: "Status", dataIndex: "status", key: "Status", sorter: false, visible: true },
-                { title: "Action", dataIndex: "Action", key: "Action", sorter: false, visible: true },
-            ],
         }
     },
     methods: {
         emptyForm() {
             return { customer: null, vehicle: '', type: null, method: '', total: '', paid: '', dueDate: '' }
         },
+        statusLabel(status) {
+            const key = { Paid: 'paid', Partial: 'partial', Overdue: 'overdue' }[status]
+            return key ? this.$t(`payments.${key}`) : status
+        },
+        typeLabel(type) {
+            return this.$t(`payments.${type === 'Financing' ? 'financing' : 'cash'}`)
+        },
+        methodLabel(method) {
+            return method === 'Cash' ? this.$t('payments.cash') : method
+        },
         statusClass(status) {
             if (status === 'Paid') return 'badge-soft-success text-dark'
             if (status === 'Partial') return 'badge-soft-warning text-dark'
             return 'badge-soft-danger text-dark'
         },
+        setStatusFilter(status) {
+            this.statusFilter = status
+            this.currentPage = 1
+        },
         markPaid(record) {
             record.paid = record.total
             record.status = 'Paid'
-            notify(`${record.id} marked as paid`)
+            notify(this.$t('payments.markedPaid', { id: record.id }))
         },
         viewReceipt(record) {
             this.receipt = { ...record }
@@ -359,7 +363,7 @@ export default {
             if (!el) return
             const win = window.open('', '_blank')
             if (!win) {
-                notify('Please allow pop-ups to print the receipt', 'warning')
+                notify(this.$t('payments.allowPopups'), 'warning')
                 return
             }
             win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Receipt ${this.receiptNo}</title><style>${RECEIPT_PRINT_CSS}</style></head><body>${el.outerHTML}</body></html>`)
@@ -369,18 +373,22 @@ export default {
         },
         downloadReceipt() {
             this.printReceipt()
-            notify('Choose "Save as PDF" in the print dialog', 'info')
+            notify(this.$t('payments.savePdfHint'), 'info')
         },
         addPayment() {
-            const total = Number(this.form.total) || 0
-            const paid = Number(this.form.paid) || 0
+            const total = Number(this.form.total)
+            const paid = Number(this.form.paid)
+            if (!this.form.customer || !Number.isFinite(total) || total <= 0 || !Number.isFinite(paid) || paid < 0 || paid > total) {
+                notify(this.$t('payments.invalidPayment'), 'warning')
+                return
+            }
             let status = 'Partial'
             if (paid >= total) status = 'Paid'
             else if (paid === 0) status = 'Overdue'
             this.payments.unshift({
-                id: 'PM-' + (7706 + this.payments.length),
-                customer: this.form.customer || 'Unassigned',
-                vehicle: this.form.vehicle,
+                id: `PM-${Math.max(7700, ...this.payments.map(payment => Number(String(payment.id).replace(/^PM-/, '')) || 0)) + 1}`,
+                customer: this.form.customer,
+                vehicle: this.form.vehicle || '—',
                 type: this.form.type || 'Cash',
                 method: this.form.method,
                 total,
@@ -389,12 +397,28 @@ export default {
                 status,
             })
             this.form = this.emptyForm()
+            this.currentPage = 1
             hideOffcanvas('add_payment')
         },
         onPageChange(page) { this.currentPage = page },
         onPageSizeChange(size) { this.pageSize = Number(size); this.currentPage = 1 },
     },
+    watch: {
+        searchQuery() { this.currentPage = 1 },
+    },
     computed: {
+        columns() {
+            return [
+                { title: this.$t('payments.payment'), dataIndex: 'id', key: 'Payment', sorter: false, visible: true },
+                { title: this.$t('payments.vehicle'), dataIndex: 'vehicle', key: 'Vehicle', sorter: false, visible: true },
+                { title: this.$t('payments.total'), dataIndex: 'total', key: 'Total', sorter: false, visible: true },
+                { title: this.$t('payments.amountPaid'), dataIndex: 'paid', key: 'Paid', sorter: false, visible: true },
+                { title: this.$t('payments.balance'), dataIndex: 'balance', key: 'Balance', sorter: false, visible: true },
+                { title: this.$t('payments.dueDate'), dataIndex: 'dueDate', key: 'dueDate', sorter: false, visible: true },
+                { title: this.$t('payments.status'), dataIndex: 'status', key: 'Status', sorter: false, visible: true },
+                { title: this.$t('payments.action'), dataIndex: 'Action', key: 'Action', sorter: false, visible: true },
+            ]
+        },
         receiptNo() {
             return this.receipt ? 'RCT-' + this.receipt.id : ''
         },
@@ -420,12 +444,12 @@ export default {
             return this.payments.reduce((sum, p) => sum + p.paid, 0)
         },
         filteredPages() {
-            const query = this.searchQuery.toLowerCase()
+            const query = this.searchQuery.trim().toLowerCase()
             return this.payments.filter((record) => {
                 const matchesQuery =
-                    record.customer.toLowerCase().includes(query) ||
-                    record.vehicle.toLowerCase().includes(query) ||
-                    record.id.toLowerCase().includes(query)
+                    String(record.customer || '').toLowerCase().includes(query) ||
+                    String(record.vehicle || '').toLowerCase().includes(query) ||
+                    String(record.id || '').toLowerCase().includes(query)
                 const matchesStatus = this.statusFilter === 'All' || record.status === this.statusFilter
                 return matchesQuery && matchesStatus
             })

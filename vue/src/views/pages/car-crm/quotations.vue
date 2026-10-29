@@ -6,28 +6,28 @@
             <div class="content-wrap">
                 <div class="d-flex align-items-center flex-wrap gap-3 border-bottom pb-4 mb-4">
                     <div class="flex-grow-1">
-                        <h4 class="mb-1">Quotations</h4>
-                        <p class="text-muted mb-0">Quotation revisions, discounts and approval status.</p>
+                        <h4 class="mb-1">{{ $t('quotations.title') }}</h4>
+                        <p class="text-muted mb-0">{{ $t('quotations.subtitle') }}</p>
                     </div>
                     <a href="#" class="btn btn-primary d-inline-flex align-items-center" data-bs-toggle="offcanvas"
-                        data-bs-target="#add_quotation"><i class="icon-plus me-1"></i>New Quotation</a>
+                        data-bs-target="#add_quotation"><i class="icon-plus me-1"></i>{{ $t('quotations.addQuotation') }}</a>
                 </div>
 
                 <div class="d-flex align-items-center flex-wrap gap-3 justify-content-between mb-4">
                     <div class="dropdown">
                         <a href="javascript:void(0);" class="dropdown-toggle btn btn-white d-inline-flex align-items-center"
                             data-bs-toggle="dropdown">
-                            <i class="icon-circle-dot text-dark me-2"></i>{{ statusFilter === 'All' ? 'All Status' : statusFilter }}
+                            <i class="icon-circle-dot text-dark me-2"></i>{{ statusFilter === 'All' ? $t('quotations.allStatus') : statusLabel(statusFilter) }}
                         </a>
                         <ul class="dropdown-menu p-3">
                             <li v-for="s in statusOptions" :key="s">
-                                <a href="javascript:void(0);" class="dropdown-item rounded" @click="statusFilter = s">{{ s }}</a>
+                                <a href="javascript:void(0);" class="dropdown-item rounded" @click="statusFilter = s">{{ s === 'All' ? $t('common.all') : statusLabel(s) }}</a>
                             </li>
                         </ul>
                     </div>
                     <div class="search-input">
                         <span class="btn-searchset"><i class="icon-search fs-14"></i></span>
-                        <input type="text" class="form-control search-addon" placeholder="Search customer" v-model="searchQuery" />
+                        <input type="text" class="form-control search-addon" :placeholder="$t('quotations.searchCustomer')" v-model="searchQuery" />
                     </div>
                 </div>
 
@@ -52,7 +52,7 @@
                                 <span class="fw-semibold">{{ money(record.total) }}</span>
                             </template>
                             <template v-if="column.key === 'Status'">
-                                <span class="badge" :class="statusClass(record.status)">{{ record.status }}</span>
+                                <span class="badge" :class="statusClass(record.status)">{{ statusLabel(record.status) }}</span>
                             </template>
                             <template v-if="column.key === 'Action'">
                                 <div class="text-end">
@@ -62,9 +62,9 @@
                                             <i class="icon-ellipsis-vertical"></i>
                                         </button>
                                         <ul class="dropdown-menu p-3">
-                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="viewQuotation(record)"><i class="icon-eye me-2"></i>View</a></li>
-                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="approveDiscount(record)"><i class="icon-check me-2"></i>Approve Discount</a></li>
-                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="sendToCustomer(record)"><i class="icon-send me-2"></i>Send to Customer</a></li>
+                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="viewQuotation(record)"><i class="icon-eye me-2"></i>{{ $t('quotations.view') }}</a></li>
+                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="approveDiscount(record)"><i class="icon-check me-2"></i>{{ $t('quotations.approveDiscount') }}</a></li>
+                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="sendToCustomer(record)"><i class="icon-send me-2"></i>{{ $t('quotations.sendToCustomer') }}</a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -82,7 +82,7 @@
 
     <div class="offcanvas offcanvas-end" tabindex="-1" id="add_quotation">
         <div class="offcanvas-header d-flex align-items-center justify-content-between">
-            <h4 class="offcanvas-title mb-0">New Quotation</h4>
+            <h4 class="offcanvas-title mb-0">{{ $t('quotations.newQuotation') }}</h4>
             <button type="button" class="btn-close btn-close-modal" data-bs-dismiss="offcanvas" aria-label="Close">
                 <i class="icon-x"></i>
             </button>
@@ -92,43 +92,43 @@
                 <div class="row gx-3">
                     <div class="col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Customer<span class="text-danger"> *</span></label>
-                            <vue-select :options="customerNames" v-model="form.customer" placeholder="Select" />
+                            <label class="form-label">{{ $t('quotations.customer') }}<span class="text-danger"> *</span></label>
+                            <vue-select :options="customerNames" v-model="form.customer" :placeholder="$t('common.select')" />
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Vehicle</label>
+                            <label class="form-label">{{ $t('quotations.vehicle') }}</label>
                             <input type="text" class="form-control" v-model="form.vehicle">
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">VIN</label>
+                            <label class="form-label">{{ $t('quotations.vin') }}</label>
                             <input type="text" class="form-control" v-model="form.vin">
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Accessories</label>
+                            <label class="form-label">{{ $t('quotations.accessories') }}</label>
                             <input type="text" class="form-control" v-model="form.accessories">
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Discount</label>
+                            <label class="form-label">{{ $t('quotations.discount') }}</label>
                             <input type="number" class="form-control" v-model="form.discount">
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Total</label>
+                            <label class="form-label">{{ $t('quotations.total') }}</label>
                             <input type="number" class="form-control" v-model="form.total">
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Expiry Date</label>
+                            <label class="form-label">{{ $t('quotations.expiryDate') }}</label>
                             <input type="date" class="form-control" v-model="form.expiry">
                         </div>
                     </div>
@@ -136,10 +136,10 @@
             </div>
             <div class="offcanvas-footer d-flex align-items-center gap-2 pt-2">
                 <button type="button" class="btn btn-dark d-flex align-items-center w-100" data-bs-dismiss="offcanvas">
-                    <i class="icon-x me-1"></i>Cancel
+                    <i class="icon-x me-1"></i>{{ $t('common.cancel') }}
                 </button>
                 <button type="submit" class="btn btn-primary d-flex align-items-center w-100">
-                    <i class="icon-circle-check me-1"></i>Create
+                    <i class="icon-circle-check me-1"></i>{{ $t('common.create') }}
                 </button>
             </div>
         </form>
@@ -150,7 +150,7 @@
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content quote-modal">
                 <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title">Quotation</h5>
+                    <h5 class="modal-title">{{ $t('quotations.quotationTitle') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" v-if="quotation">
@@ -165,46 +165,46 @@
                                 </div>
                             </div>
                             <div class="quote-title">
-                                <h3>QUOTATION</h3>
+                                <h3>{{ $t('quotations.quotationUpper') }}</h3>
                                 <p class="mb-0"><strong>{{ quotation.id }}</strong> · {{ quotation.revision }}</p>
-                                <p class="mb-0">Date: {{ quoteDate }}</p>
-                                <p class="mb-0">Valid Until: {{ quotation.expiry }}</p>
+                                <p class="mb-0">{{ $t('quotations.date') }}: {{ quoteDate }}</p>
+                                <p class="mb-0">{{ $t('quotations.validUntil') }}: {{ quotation.expiry }}</p>
                             </div>
                         </div>
 
                         <div class="quote-grid">
                             <div>
-                                <p class="quote-label">Prepared For</p>
+                                <p class="quote-label">{{ $t('quotations.preparedFor') }}</p>
                                 <h6 class="mb-1">{{ quotation.customer }}</h6>
-                                <p class="mb-0">Customer Account</p>
+                                <p class="mb-0">{{ $t('quotations.customerAccount') }}</p>
                             </div>
                             <div>
-                                <p class="quote-label">Prepared By</p>
-                                <h6 class="mb-1">Sales Department</h6>
+                                <p class="quote-label">{{ $t('quotations.preparedBy') }}</p>
+                                <h6 class="mb-1">{{ $t('quotations.salesDepartment') }}</h6>
                                 <p class="mb-0">Dreams Motors</p>
                             </div>
                             <div>
-                                <p class="quote-label">Status</p>
-                                <h6 class="mb-1">{{ quotation.status }}</h6>
-                                <p class="mb-0">Revision {{ quotation.revision }}</p>
+                                <p class="quote-label">{{ $t('quotations.status') }}</p>
+                                <h6 class="mb-1">{{ statusLabel(quotation.status) }}</h6>
+                                <p class="mb-0">{{ $t('quotations.revision') }} {{ quotation.revision }}</p>
                             </div>
                         </div>
 
                         <div class="quote-spec">
                             <div>
-                                <p class="quote-label">Vehicle</p>
+                                <p class="quote-label">{{ $t('quotations.vehicle') }}</p>
                                 <span>{{ quotation.vehicle }}</span>
                             </div>
                             <div>
-                                <p class="quote-label">VIN / Chassis</p>
+                                <p class="quote-label">{{ $t('quotations.vinChassis') }}</p>
                                 <span>{{ quotation.vin }}</span>
                             </div>
                             <div>
-                                <p class="quote-label">Accessories</p>
+                                <p class="quote-label">{{ $t('quotations.accessories') }}</p>
                                 <span>{{ quotation.accessories }}</span>
                             </div>
                             <div>
-                                <p class="quote-label">Services</p>
+                                <p class="quote-label">{{ $t('quotations.services') }}</p>
                                 <span>{{ quotation.services }}</span>
                             </div>
                         </div>
@@ -212,8 +212,8 @@
                         <table class="quote-table">
                             <thead>
                                 <tr>
-                                    <th>Description</th>
-                                    <th class="text-end">Amount</th>
+                                    <th>{{ $t('quotations.description') }}</th>
+                                    <th class="text-end">{{ $t('quotations.amount') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -225,41 +225,41 @@
                                     <td class="text-end">{{ money(line.amount) }}</td>
                                 </tr>
                                 <tr v-if="quotation.discount > 0">
-                                    <td><strong>Special Discount</strong></td>
+                                    <td><strong>{{ $t('quotations.specialDiscount') }}</strong></td>
                                     <td class="text-end text-danger">-{{ money(quotation.discount) }}</td>
                                 </tr>
                             </tbody>
                         </table>
 
                         <div class="quote-summary">
-                            <div class="quote-stamp" :class="stampClass">{{ quotation.status.toUpperCase() }}</div>
+                            <div class="quote-stamp" :class="stampClass">{{ statusLabel(quotation.status).toUpperCase() }}</div>
                             <div class="quote-totals">
-                                <div class="row"><span>Subtotal</span><span>{{ money(quotation.total + quotation.discount) }}</span></div>
-                                <div class="row" v-if="quotation.discount > 0"><span>Discount</span><span class="text-danger">-{{ money(quotation.discount) }}</span></div>
-                                <div class="row grand"><span>Grand Total</span><span>{{ money(quotation.total) }}</span></div>
+                                <div class="row"><span>{{ $t('quotations.subtotal') }}</span><span>{{ money(quotation.total + quotation.discount) }}</span></div>
+                                <div class="row" v-if="quotation.discount > 0"><span>{{ $t('quotations.discount') }}</span><span class="text-danger">-{{ money(quotation.discount) }}</span></div>
+                                <div class="row grand"><span>{{ $t('quotations.grandTotal') }}</span><span>{{ money(quotation.total) }}</span></div>
                             </div>
                         </div>
 
                         <div class="quote-terms">
-                            <p class="quote-label">Terms &amp; Conditions</p>
+                            <p class="quote-label">{{ $t('quotations.termsTitle') }}</p>
                             <ul class="mb-0">
-                                <li>This quotation is valid until {{ quotation.expiry }}.</li>
-                                <li>Prices are in USD and subject to change after the validity date.</li>
-                                <li>A booking deposit is required to reserve the vehicle by VIN.</li>
-                                <li>Warranty and delivery terms follow the approved sales contract.</li>
+                                <li>{{ $t('quotations.termValid', { date: quotation.expiry }) }}</li>
+                                <li>{{ $t('quotations.termPrice') }}</li>
+                                <li>{{ $t('quotations.termDeposit') }}</li>
+                                <li>{{ $t('quotations.termWarranty') }}</li>
                             </ul>
                         </div>
 
                         <div class="quote-foot">
-                            <div class="quote-sign"><p class="mb-1">Prepared By</p></div>
-                            <div class="quote-sign"><p class="mb-1">Customer Acceptance</p></div>
+                            <div class="quote-sign"><p class="mb-1">{{ $t('quotations.preparedBy') }}</p></div>
+                            <div class="quote-sign"><p class="mb-1">{{ $t('quotations.customerAcceptance') }}</p></div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal"><i class="icon-x me-1"></i>Close</button>
-                    <button type="button" class="btn btn-white" @click="downloadQuotation"><i class="icon-download me-1"></i>Save as PDF</button>
-                    <button type="button" class="btn btn-primary" @click="printQuotation"><i class="icon-printer me-1"></i>Print Quotation</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal"><i class="icon-x me-1"></i>{{ $t('common.close') }}</button>
+                    <button type="button" class="btn btn-white" @click="downloadQuotation"><i class="icon-download me-1"></i>{{ $t('common.savePdf') }}</button>
+                    <button type="button" class="btn btn-primary" @click="printQuotation"><i class="icon-printer me-1"></i>{{ $t('quotations.printQuotation') }}</button>
                 </div>
             </div>
         </div>
@@ -330,21 +330,20 @@ export default {
             form: this.emptyForm(),
             quotation: null,
             quoteDate: '',
-            columns: [
-                { title: "Quote", dataIndex: "id", key: "Quote", sorter: false, visible: true },
-                { title: "Customer", dataIndex: "customer", key: "customer", sorter: false, visible: true },
-                { title: "Vehicle", dataIndex: "vehicle", key: "Vehicle", sorter: false, visible: true },
-                { title: "Discount", dataIndex: "discount", key: "Discount", sorter: false, visible: true },
-                { title: "Total", dataIndex: "total", key: "Total", sorter: false, visible: true },
-                { title: "Expiry", dataIndex: "expiry", key: "expiry", sorter: false, visible: true },
-                { title: "Status", dataIndex: "status", key: "Status", sorter: false, visible: true },
-                { title: "Action", dataIndex: "Action", key: "Action", sorter: false, visible: true },
-            ],
         }
     },
     methods: {
         emptyForm() {
             return { customer: null, vehicle: '', vin: '', accessories: '', discount: '', total: '', expiry: '' }
+        },
+        statusLabel(status) {
+            const key = {
+                Sent: 'sent',
+                'Pending Approval': 'pendingApproval',
+                Approved: 'approved',
+                Accepted: 'accepted',
+            }[status]
+            return key ? this.$t(`quotations.${key}`) : status
         },
         statusClass(status) {
             if (status === 'Accepted' || status === 'Approved') return 'badge-soft-success text-dark'
@@ -403,11 +402,23 @@ export default {
         onPageSizeChange(size) { this.pageSize = Number(size); this.currentPage = 1 },
     },
     computed: {
+        columns() {
+            return [
+                { title: this.$t('quotations.quote'),    dataIndex: "id",       key: "Quote",    sorter: false, visible: true },
+                { title: this.$t('quotations.customer'), dataIndex: "customer", key: "customer", sorter: false, visible: true },
+                { title: this.$t('quotations.vehicle'),  dataIndex: "vehicle",  key: "Vehicle",  sorter: false, visible: true },
+                { title: this.$t('quotations.discount'), dataIndex: "discount", key: "Discount", sorter: false, visible: true },
+                { title: this.$t('quotations.total'),    dataIndex: "total",    key: "Total",    sorter: false, visible: true },
+                { title: this.$t('quotations.expiry'),   dataIndex: "expiry",   key: "expiry",   sorter: false, visible: true },
+                { title: this.$t('quotations.status'),   dataIndex: "status",   key: "Status",   sorter: false, visible: true },
+                { title: this.$t('quotations.action'),   dataIndex: "Action",   key: "Action",   sorter: false, visible: true },
+            ]
+        },
         quotationLines() {
             if (!this.quotation) return []
             return [{
                 description: this.quotation.vehicle,
-                detail: `VIN / Chassis: ${this.quotation.vin}`,
+                detail: `${this.$t('quotations.vinChassis')}: ${this.quotation.vin}`,
                 amount: this.quotation.total + this.quotation.discount,
             }]
         },
@@ -444,188 +455,39 @@ export default {
 </script>
 
 <style scoped>
-.quote-modal {
-    border: 0;
-}
-.quote-paper {
-    background: #fff;
-    color: #1f2937;
-    padding: 32px;
-    border-radius: 8px;
-}
-.quote-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    border-bottom: 2px solid #0D76E1;
-    padding-bottom: 20px;
-    margin-bottom: 24px;
-    gap: 16px;
-    flex-wrap: wrap;
-}
-.quote-brand {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-}
-.quote-logo {
-    width: 44px;
-    height: 44px;
-}
-.quote-brand h5 {
-    font-size: 18px;
-}
-.quote-brand p {
-    font-size: 12px;
-    color: #6b7280;
-}
-.quote-title {
-    text-align: right;
-}
-.quote-title h3 {
-    letter-spacing: 3px;
-    font-size: 22px;
-    color: #0D76E1;
-    margin-bottom: 6px;
-}
-.quote-title p {
-    font-size: 12px;
-}
-.quote-grid {
-    display: flex;
-    gap: 24px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-}
-.quote-grid > div {
-    flex: 1;
-    min-width: 140px;
-}
-.quote-grid h6 {
-    font-size: 14px;
-}
-.quote-grid p {
-    font-size: 12px;
-    color: #6b7280;
-}
-.quote-label {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #6b7280;
-    margin-bottom: 4px;
-}
-.quote-spec {
-    display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 20px;
-}
-.quote-spec > div {
-    flex: 1;
-    min-width: 140px;
-}
-.quote-spec span {
-    font-size: 13px;
-}
-.quote-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-}
-.quote-table th {
-    background: #f3f4f6;
-    text-align: left;
-    padding: 10px 12px;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-.quote-table td {
-    padding: 12px;
-    border-bottom: 1px solid #e5e7eb;
-    font-size: 13px;
-}
-.quote-sub {
-    font-size: 11px;
-    color: #6b7280;
-    margin-top: 2px;
-}
-.quote-summary {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 16px;
-    flex-wrap: wrap;
-}
-.quote-stamp {
-    display: inline-block;
-    border: 3px solid;
-    padding: 6px 18px;
-    border-radius: 8px;
-    font-weight: 800;
-    letter-spacing: 2px;
-    transform: rotate(-8deg);
-    font-size: 14px;
-}
-.quote-stamp.approved {
-    color: #16a34a;
-    border-color: #16a34a;
-}
-.quote-stamp.pending {
-    color: #d97706;
-    border-color: #d97706;
-}
-.quote-stamp.sent {
-    color: #0D76E1;
-    border-color: #0D76E1;
-}
-.quote-totals {
-    width: 280px;
-    max-width: 100%;
-}
-.quote-totals .row {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    font-size: 13px;
-}
-.quote-totals .grand {
-    border-top: 2px solid #1f2937;
-    font-weight: 700;
-    font-size: 16px;
-    margin-top: 4px;
-    padding-top: 12px;
-}
-.quote-terms {
-    margin-top: 28px;
-    font-size: 12px;
-    color: #4b5563;
-}
-.quote-terms ul {
-    margin: 6px 0 0;
-    padding-left: 18px;
-}
-.quote-terms li {
-    margin-bottom: 3px;
-}
-.quote-foot {
-    margin-top: 40px;
-    display: flex;
-    justify-content: space-between;
-    gap: 24px;
-    flex-wrap: wrap;
-}
-.quote-sign {
-    border-top: 1px solid #9ca3af;
-    width: 220px;
-    text-align: center;
-    padding-top: 6px;
-    font-size: 12px;
-    color: #374151;
-}
+.quote-modal { border: 0; }
+.quote-paper { background: #fff; color: #1f2937; padding: 32px; border-radius: 8px; }
+.quote-head { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #0D76E1; padding-bottom: 20px; margin-bottom: 24px; gap: 16px; flex-wrap: wrap; }
+.quote-brand { display: flex; gap: 12px; align-items: center; }
+.quote-logo { width: 44px; height: 44px; }
+.quote-brand h5 { font-size: 18px; }
+.quote-brand p { font-size: 12px; color: #6b7280; }
+.quote-title { text-align: right; }
+.quote-title h3 { letter-spacing: 3px; font-size: 22px; color: #0D76E1; margin-bottom: 6px; }
+.quote-title p { font-size: 12px; }
+.quote-grid { display: flex; gap: 24px; margin-bottom: 20px; flex-wrap: wrap; }
+.quote-grid > div { flex: 1; min-width: 140px; }
+.quote-grid h6 { font-size: 14px; }
+.quote-grid p { font-size: 12px; color: #6b7280; }
+.quote-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; margin-bottom: 4px; }
+.quote-spec { display: flex; gap: 24px; flex-wrap: wrap; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; margin-bottom: 20px; }
+.quote-spec > div { flex: 1; min-width: 140px; }
+.quote-spec span { font-size: 13px; }
+.quote-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+.quote-table th { background: #f3f4f6; text-align: left; padding: 10px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+.quote-table td { padding: 12px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
+.quote-sub { font-size: 11px; color: #6b7280; margin-top: 2px; }
+.quote-summary { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.quote-stamp { display: inline-block; border: 3px solid; padding: 6px 18px; border-radius: 8px; font-weight: 800; letter-spacing: 2px; transform: rotate(-8deg); font-size: 14px; }
+.quote-stamp.approved { color: #16a34a; border-color: #16a34a; }
+.quote-stamp.pending { color: #d97706; border-color: #d97706; }
+.quote-stamp.sent { color: #0D76E1; border-color: #0D76E1; }
+.quote-totals { width: 280px; max-width: 100%; }
+.quote-totals .row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 13px; }
+.quote-totals .grand { border-top: 2px solid #1f2937; font-weight: 700; font-size: 16px; margin-top: 4px; padding-top: 12px; }
+.quote-terms { margin-top: 28px; font-size: 12px; color: #4b5563; }
+.quote-terms ul { margin: 6px 0 0; padding-left: 18px; }
+.quote-terms li { margin-bottom: 3px; }
+.quote-foot { margin-top: 40px; display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+.quote-sign { border-top: 1px solid #9ca3af; width: 220px; text-align: center; padding-top: 6px; font-size: 12px; color: #374151; }
 </style>

@@ -6,18 +6,18 @@
             <div class="content-wrap">
                 <div class="d-flex align-items-center flex-wrap gap-3 border-bottom pb-4 mb-4">
                     <div class="flex-grow-1">
-                        <h4 class="mb-1">Spare Parts &amp; Accessories</h4>
-                        <p class="text-muted mb-0">Part numbers, compatibility, stock levels and workshop pricing.</p>
+                        <h4 class="mb-1">{{ $t('PartsList.title') }}</h4>
+                        <p class="text-muted mb-0">{{ $t('PartsList.subtitle') }}</p>
                     </div>
                     <a href="#" class="btn btn-primary d-inline-flex align-items-center" data-bs-toggle="offcanvas"
-                        data-bs-target="#add_part" @click="openCreate"><i class="icon-plus me-1"></i>Add Part</a>
+                        data-bs-target="#add_part" @click="openCreate"><i class="icon-plus me-1"></i>{{ $t('PartsList.addPart') }}</a>
                 </div>
 
                 <div class="row g-4 mb-4">
                     <div class="col-xxl-3 col-md-6">
                         <div class="card dash-card mb-0">
                             <div class="card-body">
-                                <h6 class="mb-2">Part Numbers</h6>
+                                <h6 class="mb-2">{{ $t('PartsList.partNumbers') }}</h6>
                                 <h3 class="mb-0">{{ parts.length }}</h3>
                             </div>
                         </div>
@@ -25,7 +25,7 @@
                     <div class="col-xxl-3 col-md-6">
                         <div class="card dash-card mb-0">
                             <div class="card-body">
-                                <h6 class="mb-2">Low Stock</h6>
+                                <h6 class="mb-2">{{ $t('PartsList.lowStock') }}</h6>
                                 <h3 class="mb-0 text-warning">{{ lowStockCount }}</h3>
                             </div>
                         </div>
@@ -33,7 +33,7 @@
                     <div class="col-xxl-3 col-md-6">
                         <div class="card dash-card mb-0">
                             <div class="card-body">
-                                <h6 class="mb-2">Out of Stock</h6>
+                                <h6 class="mb-2">{{ $t('PartsList.outOfStock') }}</h6>
                                 <h3 class="mb-0 text-danger">{{ outStockCount }}</h3>
                             </div>
                         </div>
@@ -41,7 +41,7 @@
                     <div class="col-xxl-3 col-md-6">
                         <div class="card dash-card mb-0">
                             <div class="card-body">
-                                <h6 class="mb-2">Stock Value (Cost)</h6>
+                                <h6 class="mb-2">{{ $t('PartsList.stockValueCost') }}</h6>
                                 <h3 class="mb-0">{{ money(stockValue) }}</h3>
                             </div>
                         </div>
@@ -53,29 +53,29 @@
                         <div class="dropdown">
                             <a href="javascript:void(0);" class="dropdown-toggle btn btn-white d-inline-flex align-items-center"
                                 data-bs-toggle="dropdown">
-                                <i class="icon-layers text-dark me-2"></i>{{ categoryFilter === 'All' ? 'All Categories' : categoryFilter }}
+                                <i class="icon-layers text-dark me-2"></i>{{ categoryFilter === 'All' ? $t('PartsList.allCategories') : categoryLabel(categoryFilter) }}
                             </a>
                             <ul class="dropdown-menu p-3">
                                 <li v-for="c in categoryOptions" :key="c">
-                                    <a href="javascript:void(0);" class="dropdown-item rounded" @click="categoryFilter = c">{{ c }}</a>
+                                    <a href="javascript:void(0);" class="dropdown-item rounded" @click="categoryFilter = c">{{ c === 'All' ? $t('PartsList.all') : categoryLabel(c) }}</a>
                                 </li>
                             </ul>
                         </div>
                         <div class="dropdown">
                             <a href="javascript:void(0);" class="dropdown-toggle btn btn-white d-inline-flex align-items-center"
                                 data-bs-toggle="dropdown">
-                                <i class="icon-circle-dot text-dark me-2"></i>{{ statusFilter === 'All' ? 'All Status' : statusFilter }}
+                                <i class="icon-circle-dot text-dark me-2"></i>{{ statusFilter === 'All' ? $t('PartsList.allStatus') : statusLabel(statusFilter) }}
                             </a>
                             <ul class="dropdown-menu p-3">
                                 <li v-for="s in statusOptions" :key="s">
-                                    <a href="javascript:void(0);" class="dropdown-item rounded" @click="statusFilter = s">{{ s }}</a>
+                                    <a href="javascript:void(0);" class="dropdown-item rounded" @click="statusFilter = s">{{ s === 'All' ? $t('PartsList.all') : statusLabel(s) }}</a>
                                 </li>
                             </ul>
                         </div>
                     </div>
                     <div class="search-input">
                         <span class="btn-searchset"><i class="icon-search fs-14"></i></span>
-                        <input type="text" class="form-control search-addon" placeholder="Search part / SKU" v-model="searchQuery" />
+                        <input type="search" class="form-control search-addon" :placeholder="$t('PartsList.searchPlaceholder')" v-model="searchQuery" />
                     </div>
                 </div>
 
@@ -97,35 +97,36 @@
                             <template v-if="column.key === 'Compatibility'">
                                 <span class="fs-13">{{ record.compatibility }}</span>
                             </template>
+                            <template v-if="column.key === 'category'">{{ categoryLabel(record.category) }}</template>
                             <template v-if="column.key === 'Location'">
                                 <span class="fs-13">{{ record.warehouse }} · {{ record.shelf }}-{{ record.bin }}</span>
                             </template>
                             <template v-if="column.key === 'Stock'">
                                 <span class="fw-semibold">{{ record.stock }}</span>
-                                <div class="fs-13 text-muted">min {{ record.minStock }}</div>
+                                <div class="fs-13 text-muted">{{ $t('PartsList.minimum') }} {{ record.minStock }}</div>
                             </template>
                             <template v-if="column.key === 'Cost'">{{ money(record.cost) }}</template>
                             <template v-if="column.key === 'Retail'">{{ money(record.retailPrice) }}</template>
                             <template v-if="column.key === 'Workshop'">{{ money(record.workshopPrice) }}</template>
                             <template v-if="column.key === 'Status'">
-                                <span class="badge" :class="statusClass(record)">{{ stockStatus(record) }}</span>
+                                <span class="badge" :class="statusClass(record)">{{ statusLabel(stockStatus(record)) }}</span>
                             </template>
                             <template v-if="column.key === 'Action'">
                                 <div class="text-end">
                                     <div class="dropstart">
                                         <button class="btn btn-icon btn-white" type="button" data-bs-toggle="dropdown"
-                                            aria-label="Actions">
+                                            :aria-label="$t('PartsList.actions')">
                                             <i class="icon-ellipsis-vertical"></i>
                                         </button>
                                         <ul class="dropdown-menu p-3">
-                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="openDetail('Spare Part', record)"><i class="icon-eye me-2"></i>View Part</a></li>
+                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="openDetail($t('PartsList.sparePart'), record)"><i class="icon-eye me-2"></i>{{ $t('PartsList.viewPart') }}</a></li>
                                             <li>
                                                 <a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center"
                                                     data-bs-toggle="modal" data-bs-target="#adjust_modal" @click="setAdjust(record)">
-                                                    <i class="icon-arrow-left-right me-2"></i>Stock Adjustment
+                                                    <i class="icon-arrow-left-right me-2"></i>{{ $t('PartsList.stockAdjustment') }}
                                                 </a>
                                             </li>
-                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="openEdit(record)"><i class="icon-pencil-line me-2"></i>Edit</a></li>
+                                            <li><a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" @click="openEdit(record)"><i class="icon-pencil-line me-2"></i>{{ $t('PartsList.edit') }}</a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -146,23 +147,23 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Stock Adjustment</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">{{ $t('PartsList.stockAdjustment') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" :aria-label="$t('PartsList.close')"></button>
                 </div>
                 <div class="modal-body" v-if="adjustItem">
-                    <p class="mb-3">{{ adjustItem.name }} · current stock <strong>{{ adjustItem.stock }}</strong></p>
+                    <p class="mb-3">{{ adjustItem.name }} · {{ $t('PartsList.currentStock') }} <strong>{{ adjustItem.stock }}</strong></p>
                     <div class="mb-3">
-                        <label class="form-label">New Stock Count</label>
+                        <label class="form-label">{{ $t('PartsList.newStockCount') }}</label>
                         <input type="number" class="form-control" v-model.number="adjustCount">
                     </div>
                     <div class="mb-0">
-                        <label class="form-label">Reason for Adjustment<span class="text-danger"> *</span></label>
-                        <input type="text" class="form-control" v-model="adjustReason" placeholder="e.g. Stock count correction">
+                        <label class="form-label">{{ $t('PartsList.adjustmentReason') }}<span class="text-danger"> *</span></label>
+                        <input type="text" class="form-control" v-model="adjustReason" :placeholder="$t('PartsList.adjustmentReasonPlaceholder')">
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="applyAdjust">Save</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ $t('PartsList.cancel') }}</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="applyAdjust">{{ $t('PartsList.save') }}</button>
                 </div>
             </div>
         </div>
@@ -171,8 +172,8 @@
     <!-- Add part -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="add_part">
         <div class="offcanvas-header d-flex align-items-center justify-content-between">
-            <h4 class="offcanvas-title mb-0">{{ editingId ? 'Edit Part' : 'Add Part' }}</h4>
-            <button type="button" class="btn-close btn-close-modal" data-bs-dismiss="offcanvas" aria-label="Close">
+            <h4 class="offcanvas-title mb-0">{{ editingId ? $t('PartsList.editPart') : $t('PartsList.addPart') }}</h4>
+            <button type="button" class="btn-close btn-close-modal" data-bs-dismiss="offcanvas" :aria-label="$t('PartsList.close')">
                 <i class="icon-x"></i>
             </button>
         </div>
@@ -181,85 +182,85 @@
                 <div class="row gx-3">
                     <div class="col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Part Name<span class="text-danger"> *</span></label>
+                            <label class="form-label">{{ $t('PartsList.partName') }}<span class="text-danger"> *</span></label>
                             <input type="text" class="form-control" v-model="form.name" required>
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Part Number</label>
+                            <label class="form-label">{{ $t('PartsList.partNumber') }}</label>
                             <input type="text" class="form-control" v-model="form.partNumber">
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">SKU</label>
+                            <label class="form-label">{{ $t('PartsList.sku') }}</label>
                             <input type="text" class="form-control" v-model="form.sku">
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Brand</label>
+                            <label class="form-label">{{ $t('PartsList.brand') }}</label>
                             <input type="text" class="form-control" v-model="form.brand">
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Category</label>
-                            <vue-select :options="partCategories" v-model="form.category" placeholder="Select" />
+                            <label class="form-label">{{ $t('PartsList.category') }}</label>
+                            <vue-select :options="categorySelectOptions" label="label" :reduce="option => option.value" v-model="form.category" :placeholder="$t('PartsList.select')" />
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Compatibility</label>
-                            <input type="text" class="form-control" v-model="form.compatibility" placeholder="Model / year / engine">
+                            <label class="form-label">{{ $t('PartsList.compatibility') }}</label>
+                            <input type="text" class="form-control" v-model="form.compatibility" :placeholder="$t('PartsList.compatibilityPlaceholder')">
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Warehouse</label>
+                            <label class="form-label">{{ $t('PartsList.warehouse') }}</label>
                             <input type="text" class="form-control" v-model="form.warehouse">
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Shelf</label>
+                            <label class="form-label">{{ $t('PartsList.shelf') }}</label>
                             <input type="text" class="form-control" v-model="form.shelf">
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Bin</label>
+                            <label class="form-label">{{ $t('PartsList.bin') }}</label>
                             <input type="text" class="form-control" v-model="form.bin">
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Opening Stock</label>
+                            <label class="form-label">{{ $t('PartsList.openingStock') }}</label>
                             <input type="number" class="form-control" v-model="form.stock">
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Minimum Stock</label>
+                            <label class="form-label">{{ $t('PartsList.minimumStock') }}</label>
                             <input type="number" class="form-control" v-model="form.minStock">
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Cost</label>
+                            <label class="form-label">{{ $t('PartsList.cost') }}</label>
                             <input type="number" class="form-control" v-model="form.cost">
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Retail Price</label>
+                            <label class="form-label">{{ $t('PartsList.retailPrice') }}</label>
                             <input type="number" class="form-control" v-model="form.retailPrice">
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-12">
                         <div class="mb-3">
-                            <label class="form-label">Workshop Price</label>
+                            <label class="form-label">{{ $t('PartsList.workshopPrice') }}</label>
                             <input type="number" class="form-control" v-model="form.workshopPrice">
                         </div>
                     </div>
@@ -267,10 +268,10 @@
             </div>
             <div class="offcanvas-footer d-flex align-items-center gap-2 pt-2">
                 <button type="button" class="btn btn-dark d-flex align-items-center w-100" data-bs-dismiss="offcanvas">
-                    <i class="icon-x me-1"></i>Cancel
+                    <i class="icon-x me-1"></i>{{ $t('PartsList.cancel') }}
                 </button>
                 <button type="submit" class="btn btn-primary d-flex align-items-center w-100">
-                    <i class="icon-circle-check me-1"></i>{{ editingId ? 'Save Changes' : 'Save' }}
+                    <i class="icon-circle-check me-1"></i>{{ editingId ? $t('PartsList.saveChanges') : $t('PartsList.save') }}
                 </button>
             </div>
         </form>
@@ -307,19 +308,6 @@ export default {
             adjustReason: '',
             form: this.emptyForm(),
             editingId: null,
-            columns: [
-                { title: "Part", dataIndex: "name", key: "Part", sorter: false, visible: true },
-                { title: "Brand", dataIndex: "brand", key: "brand", sorter: false, visible: true },
-                { title: "Category", dataIndex: "category", key: "category", sorter: false, visible: true },
-                { title: "Compatibility", dataIndex: "compatibility", key: "Compatibility", sorter: false, visible: true },
-                { title: "Location", dataIndex: "warehouse", key: "Location", sorter: false, visible: true },
-                { title: "Stock", dataIndex: "stock", key: "Stock", sorter: false, visible: true },
-                { title: "Cost", dataIndex: "cost", key: "Cost", sorter: false, visible: true },
-                { title: "Retail", dataIndex: "retailPrice", key: "Retail", sorter: false, visible: true },
-                { title: "Workshop", dataIndex: "workshopPrice", key: "Workshop", sorter: false, visible: true },
-                { title: "Status", dataIndex: "status", key: "Status", sorter: false, visible: true },
-                { title: "Action", dataIndex: "Action", key: "Action", sorter: false, visible: true },
-            ],
         }
     },
     methods: {
@@ -328,6 +316,27 @@ export default {
                 name: '', partNumber: '', sku: '', brand: '', category: null, compatibility: '',
                 warehouse: '', shelf: '', bin: '', stock: '', minStock: '', cost: '', retailPrice: '', workshopPrice: '',
             }
+        },
+        statusLabel(status) {
+            const key = {
+                'In Stock': 'inStock',
+                'Low Stock': 'lowStock',
+                'Out of Stock': 'outOfStock',
+            }[status]
+            return key ? this.$t(`PartsList.statuses.${key}`) : status
+        },
+        categoryLabel(category) {
+            const key = {
+                Engine: 'engine',
+                Brakes: 'brakes',
+                Suspension: 'suspension',
+                Electrical: 'electrical',
+                Filters: 'filters',
+                Body: 'body',
+                Fluids: 'fluids',
+                Accessories: 'accessories',
+            }[category]
+            return key ? this.$t(`PartsList.categories.${key}`) : category
         },
         statusClass(part) {
             const status = stockStatus(part)
@@ -343,7 +352,7 @@ export default {
         applyAdjust() {
             if (this.adjustItem && this.adjustReason.trim()) {
                 this.adjustItem.stock = Number(this.adjustCount) || 0
-                notify(`${this.adjustItem.name} stock adjusted`)
+                notify(this.$t('PartsList.stockAdjusted', { name: this.adjustItem.name }))
             }
         },
         openCreate() {
@@ -375,7 +384,7 @@ export default {
                         workshopPrice: Number(this.form.workshopPrice) || 0,
                     })
                 }
-                notify('Part updated')
+                notify(this.$t('PartsList.partUpdated'))
             } else {
                 this.parts.unshift({
                     id: 'PT-' + (9011 + this.parts.length),
@@ -398,7 +407,7 @@ export default {
                     batch: '',
                     expiry: '—',
                 })
-                notify('Part added')
+                notify(this.$t('PartsList.partAdded'))
             }
             this.editingId = null
             this.form = this.emptyForm()
@@ -408,6 +417,24 @@ export default {
         onPageSizeChange(size) { this.pageSize = Number(size); this.currentPage = 1 },
     },
     computed: {
+        columns() {
+            return [
+                { title: this.$t('PartsList.part'), dataIndex: 'name', key: 'Part', sorter: false, visible: true },
+                { title: this.$t('PartsList.brand'), dataIndex: 'brand', key: 'brand', sorter: false, visible: true },
+                { title: this.$t('PartsList.category'), dataIndex: 'category', key: 'category', sorter: false, visible: true },
+                { title: this.$t('PartsList.compatibility'), dataIndex: 'compatibility', key: 'Compatibility', sorter: false, visible: true },
+                { title: this.$t('PartsList.location'), dataIndex: 'warehouse', key: 'Location', sorter: false, visible: true },
+                { title: this.$t('PartsList.stock'), dataIndex: 'stock', key: 'Stock', sorter: false, visible: true },
+                { title: this.$t('PartsList.cost'), dataIndex: 'cost', key: 'Cost', sorter: false, visible: true },
+                { title: this.$t('PartsList.retail'), dataIndex: 'retailPrice', key: 'Retail', sorter: false, visible: true },
+                { title: this.$t('PartsList.workshop'), dataIndex: 'workshopPrice', key: 'Workshop', sorter: false, visible: true },
+                { title: this.$t('PartsList.status'), dataIndex: 'status', key: 'Status', sorter: false, visible: true },
+                { title: this.$t('PartsList.action'), dataIndex: 'Action', key: 'Action', sorter: false, visible: true },
+            ]
+        },
+        categorySelectOptions() {
+            return this.partCategories.map((value) => ({ value, label: this.categoryLabel(value) }))
+        },
         lowStockCount() {
             return this.parts.filter(p => stockStatus(p) === 'Low Stock').length
         },
